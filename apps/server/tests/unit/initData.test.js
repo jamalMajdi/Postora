@@ -1,3 +1,4 @@
+import { createHmac } from 'node:crypto';
 import { describe, it, expect } from 'vitest';
 import { validateInitData, buildInitDataForTests } from '../../src/telegram/initDataValidator.js';
 
@@ -89,5 +90,79 @@ describe('initData validator', () => {
     const a = buildInitDataForTests(USER, TOKEN, { authDate: 1700000000 });
     const b = buildInitDataForTests(USER, TOKEN, { authDate: 1700000000 });
     expect(a).toBe(b); // حتمية
+  });
+
+  /* ------------------------------------------------------------------
+   * انحدار: حقل `signature` الذي يضيفه تلجرام في العملاء الحديثة.
+   *
+   * تلجرام يوقّع HMAC على **كل** الحقول الواردة عدا `hash`.
+   * استثناء `signature` يخصّ مسار Ed25519 وحده، وليس تحقق توكن البوت.
+   * استثناؤه هنا كان يرفض كل تشغيل حقيقي للتطبيق داخل تلجرام.
+   * ------------------------------------------------------------------ */
+
+  it('يقبل initData حقيقية تحتوي حقل signature (تحقق HMAC بتوكن البوت)', () => {
+    const authDate = Math.floor(Date.now() / 1000);
+    const params = new URLSearchParams();
+    params.set('auth_date', String(authDate));
+    params.set('query_id', `AAH${authDate}`);
+    params.set('user', JSON.stringify(USER));
+    params.set('signature', 'ZmFrZV9lZDI1NTE5X3NpZ25hdHVyZV92YWx1ZV9mb3JfdGVzdA==');
+
+    // نبني التوقيع كما يبنيه تلجرام: كل الحقول عدا hash (بما فيها signature)
+    const pairs = [...params.entries()].sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0));
+    const dataCheckString = pairs.map(([k, v]) => `${k}=${v}`).join('\n');
+    const secretKey = createHmac('sha256', 'WebAppData').update(TOKEN).digest();
+    params.set('hash', createHmac('sha256', secretKey).update(dataCheckString).digest('hex'));
+
+    const initData = params.toString();
+    expect(initData).toContain('signature=');
+
+    const result = validateInitData(initData, { botToken: TOKEN });
+    expect(String(result.user.id)).toBe(String(USER.id));
+    expect(result.user.username).toBe(USER.username);
+  });
+
+  it('يرفض initData تحمل signature معدّلًا بعد التوقيع', () => {
+    const authDate = Math.floor(Date.now() / 1000);
+    const params = new URLSearchParams();
+    params.set('auth_date', String(authDate));
+    params.set('query_id', `AAH${authDate}`);
+    params.set('user', JSON.stringify(USER));
+    params.set('signature', 'ORIGINAL_SIGNATURE');
+
+    const pairs = [...params.entries()].sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0));
+    const dataCheckString = pairs.map(([k, v]) => `${k}=${v}`).join('\n');
+    const secretKey = createHmac('sha256', 'WebAppData').update(TOKEN).digest();
+    params.set('hash', createHmac('sha256', secretKey).update(dataCheckString).digest('hex'));
+
+    // تعديل signature بعد التوقيع ⇒ يجب الرفض (يثبت أن signature داخل نطاق التوقيع)
+    const tampered = params.toString().replace('ORIGINAL_SIGNATURE', 'TAMPERED_SIGNATURE');
+    expect(() => validateInitData(tampered, { botToken: TOKEN })).toThrowError(
+      /AUTH_INVALID_INIT_DATA/
+    );
+  });
+
+  it('حذف signature من initData موقّعة معه يُبطل التوقيع (إثبات أنه ليس حقلًا حرًّا)', () => {
+    const authDate = Math.floor(Date.now() / 1000);
+    const params = new URLSearchParams();
+    params.set('auth_date', String(authDate));
+    params.set('query_id', `AAH${authDate}`);
+    params.set('user', JSON.stringify(USER));
+    params.set('signature', 'SOME_SIGNATURE');
+
+    const pairs = [...params.entries()].sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0));
+    const dataCheckString = pairs.map(([k, v]) => `${k}=${v}`).join('\n');
+    const secretKey = createHmac('sha256', 'WebAppData').update(TOKEN).digest();
+    params.set('hash', createHmac('sha256', secretKey).update(dataCheckString).digest('hex'));
+
+    const stripped = params
+      .toString()
+      .split('&')
+      .filter((pair) => !pair.startsWith('signature='))
+      .join('&');
+
+    expect(() => validateInitData(stripped, { botToken: TOKEN })).toThrowError(
+      /AUTH_INVALID_INIT_DATA/
+    );
   });
 });

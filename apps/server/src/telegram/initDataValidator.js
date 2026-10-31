@@ -42,10 +42,18 @@ export function validateInitData(initData, options) {
     throw new AppError(ErrorCode.AUTH_INVALID_INIT_DATA);
   }
 
-  // بناء data_check_string من كل الحقول عدا hash
+  // بناء data_check_string من كل الحقول عدا hash.
+  //
+  // ⚠️ مهم جدًا: حقل `signature` (الذي يضيفه تلجرام في العملاء الحديثة) **يجب أن يبقى**
+  // داخل data_check_string لتحقق HMAC القائم على توكن البوت. تلجرام يوقّع كل الحقول
+  // الواردة عدا `hash` فقط. استثناء `signature` يخصّ **فقط** مسار التحقق الثالث
+  // (Ed25519 عبر مفاتيح تلجرام العامة)، وليس هذا المسار.
+  // استثناؤه هنا يجعل التوقيع المحسوب لا يطابق توقيع تلجرام أبدًا ⇒ رفض كل
+  // تشغيل حقيقي للتطبيق داخل تلجرام برمز AUTH_INVALID_INIT_DATA.
+  // مرجع: https://core.telegram.org/bots/webapps#validating-data-received-via-the-mini-app
   const pairs = [];
   for (const [key, value] of [...params.entries()]) {
-    if (key === 'hash' || key === 'signature') continue;
+    if (key === 'hash') continue;
     pairs.push([key, value]);
   }
   pairs.sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0));
@@ -55,7 +63,18 @@ export function validateInitData(initData, options) {
   const computed = createHmac('sha256', secretKey).update(dataCheckString).digest('hex');
 
   if (!safeCompareHex(computed, hash)) {
-    throw new AppError(ErrorCode.AUTH_INVALID_INIT_DATA);
+    // سبب تشخيصي بلا أي بيانات حساسة: يكشف الحالة الشائعة (توكن مختلف بين
+    // الواجهة والخادم، أو إرسال initData قديمة/معدّلة) دون تسريب أي سر.
+    throw new AppError(ErrorCode.AUTH_INVALID_INIT_DATA, {
+      details: {
+        reason: 'hash_mismatch',
+        fieldCount: pairs.length,
+        hasSignatureField: params.has('signature'),
+        authDateAgeSeconds: Number.isFinite(Number(params.get('auth_date')))
+          ? now() - Number(params.get('auth_date'))
+          : null
+      }
+    });
   }
 
   // فحص العمر
@@ -131,6 +150,7 @@ export function buildInitDataForTests(user, botToken, options = {}) {
   }
 
   const pairs = [...params.entries()].sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0));
+  // كل الحقول الواردة (يشمل signature إن وُجد) عدا hash — نفس قاعدة تلجرام
   const dataCheckString = pairs.map(([k, v]) => `${k}=${v}`).join('\n');
   const secretKey = createHmac('sha256', 'WebAppData').update(botToken).digest();
   const hash = createHmac('sha256', secretKey).update(dataCheckString).digest('hex');

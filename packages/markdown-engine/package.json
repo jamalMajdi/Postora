@@ -1,0 +1,22 @@
+{
+  "name": "@postora/markdown-engine",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@postora/shared": "1.0.0",
+    "markdown-it": "15.0.3"
+  },
+  "devDependencies": {
+    "vitest": "^3.2.4"
+  }
+}

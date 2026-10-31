@@ -1,0 +1,81 @@
+# ------------------------------------------------------------
+# Postora — نشر على Render (Backend + PostgreSQL)
+#
+# الاستخدام (Blueprint):
+#   Dashboard → New → Blueprint → اختر مستودعك → Render يقرأ هذا الملف.
+#
+# ملاحظات مهمة:
+#   • Mini App تُنشر على Vercel (apps/miniapp/vercel.json) — ليست هنا.
+#   • BOT_MODE=webhook إلزامي: خدمة Render المجانية تنام، و Polling يتوقف معها.
+#   • WEBHOOK_URL يُكتشف تلقائيًا من RENDER_EXTERNAL_URL — لا تحتاج ضبطه.
+# ------------------------------------------------------------
+services:
+  - type: web
+    name: postora-api
+    runtime: node
+    plan: free
+    region: frankfurt # أقرب منطقة؛ غيّرها حسب جمهورك
+    branch: main
+    # البناء من جذر المشروع (monorepo) — يجب أن يشمل الحزم المشتركة
+    buildCommand: npm ci --omit=dev --include=dev && npm run build
+    startCommand: node scripts/migrate.js up && node apps/server/src/index.js
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      # ---------- قاعدة البيانات (تُربط تلقائيًا) ----------
+      - key: DATABASE_URL
+        fromDatabase:
+          name: postora-db
+          property: connectionString
+
+      # ---------- البوت (يُطلب إدخالها عند الإنشاء) ----------
+      - key: BOT_TOKEN
+        sync: false # سرّي — يُدخل من لوحة Render
+      - key: BOT_USERNAME
+        value: Postora_1bot
+      - key: BOT_MODE
+        value: webhook
+      - key: WEBHOOK_SECRET
+        generateValue: true # Render يولّد سرًّا عشوائيًا
+      # WEBHOOK_URL يُشتق تلقائيًا من RENDER_EXTERNAL_URL داخل config/env.js
+
+      # ---------- المصادقة ----------
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_TTL_SECONDS
+        value: '7200'
+      - key: INIT_DATA_MAX_AGE_SECONDS
+        value: '86400'
+
+      # ---------- الشبكة ----------
+      - key: NODE_ENV
+        value: production
+      # ⚠️ ضع نطاق Vercel هنا بعد نشره (وإلا سترفض المتصفحات طلبات CORS)
+      - key: CORS_ORIGINS
+        sync: false
+      - key: MINIAPP_URL
+        sync: false
+
+      # ---------- الحدود ----------
+      - key: MAX_UPLOAD_BYTES
+        value: '262144'
+      - key: MAX_CONTENT_CHARS
+        value: '100000'
+      - key: MAX_PUBLISH_MESSAGES
+        value: '40'
+
+      # ---------- السجلات ----------
+      - key: LOG_LEVEL
+        value: info
+
+      # ⚠️ لا تضبط TELEGRAM_API_BASE_URL أبدًا في الإنتاج
+      #    (توجيهه لخادم وهمي يجعل البوت يعمل بلا استقبال أي تحديث، بلا أي خطأ)
+
+databases:
+  - name: postora-db
+    plan: free
+    region: frankfurt
+    databaseName: postora
+    user: postora
+    # postgres 17 متاح على Render؛ إن لم يتوفر اختر 16
+    postgresMajorVersion: '17'

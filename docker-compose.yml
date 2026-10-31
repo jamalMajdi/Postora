@@ -1,0 +1,68 @@
+# ------------------------------------------------------------
+# Postora — نشر كامل (PostgreSQL + Backend + Mini App)
+#
+# التشغيل:
+#   1) cp .env.example .env  ثم عبّئ القيم (BOT_TOKEN, JWT_SECRET, ...)
+#   2) docker compose up -d --build
+#   3) docker compose exec backend node scripts/migrate.js up
+#
+# ملاحظة: Mini App يحتاج HTTPS في تلجرام — ضع reverse proxy (Caddy/Nginx)
+#           أمام المنفذ 8080 (راجع docs/DEPLOYMENT.md).
+# ------------------------------------------------------------
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postora}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postora_dev_pw}
+      POSTGRES_DB: ${POSTGRES_DB:-postora}
+    volumes:
+      - postora_db:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-postora} -d ${POSTGRES_DB:-postora}']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: .
+      dockerfile: apps/server/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      BOT_TOKEN: ${BOT_TOKEN}
+      BOT_USERNAME: ${BOT_USERNAME:-Postora_1bot}
+      BOT_MODE: ${BOT_MODE:-polling}
+      WEBHOOK_URL: ${WEBHOOK_URL:-}
+      WEBHOOK_SECRET: ${WEBHOOK_SECRET:-}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postora}:${POSTGRES_PASSWORD:-postora_dev_pw}@db:5432/${POSTGRES_DB:-postora}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_TTL_SECONDS: ${JWT_TTL_SECONDS:-7200}
+      INIT_DATA_MAX_AGE_SECONDS: ${INIT_DATA_MAX_AGE_SECONDS:-86400}
+      CORS_ORIGINS: ${CORS_ORIGINS}
+      MINIAPP_URL: ${MINIAPP_URL}
+      MAX_UPLOAD_BYTES: ${MAX_UPLOAD_BYTES:-262144}
+      MAX_CONTENT_CHARS: ${MAX_CONTENT_CHARS:-100000}
+      MAX_PUBLISH_MESSAGES: ${MAX_PUBLISH_MESSAGES:-40}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+    ports:
+      - '3000:3000'
+
+  miniapp:
+    build:
+      context: .
+      dockerfile: apps/miniapp/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - '8080:80'
+
+volumes:
+  postora_db:

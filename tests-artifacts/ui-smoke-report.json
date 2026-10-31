@@ -1,0 +1,55 @@
+{
+  "generatedAt": "2026-10-30T07:50:47.438Z",
+  "appUrl": "http://127.0.0.1:5173/",
+  "total": 9,
+  "passed": 9,
+  "failed": 0,
+  "consoleErrors": [],
+  "results": [
+    {
+      "step": "تحميل لوحة التحكم",
+      "ok": true,
+      "detail": "dashboard rendered"
+    },
+    {
+      "step": "فتح المحرر",
+      "ok": true,
+      "detail": "editor textarea visible"
+    },
+    {
+      "step": "المعاينة المباشرة تعمل",
+      "ok": true,
+      "detail": "عدد الرسائل: 1 إجمالي المحارف: 174 ⚠️ 3"
+    },
+    {
+      "step": "معاينة تلجرام تطابق التنسيقات",
+      "ok": true,
+      "detail": "bold=true italic=true strike=true code=true link=true quote=true pre=true"
+    },
+    {
+      "step": "ربط القناة عبر الواجهة",
+      "ok": true,
+      "detail": "@postora_demo_channel connected"
+    },
+    {
+      "step": "النشر من الواجهة",
+      "ok": true,
+      "detail": "publication succeeded"
+    },
+    {
+      "step": "حفظ وعرض المسودات",
+      "ok": true,
+      "detail": "draft listed"
+    },
+    {
+      "step": "تبديل اللغة إلى الإنجليزية + LTR",
+      "ok": true,
+      "detail": "dir=ltr, english=true"
+    },
+    {
+      "step": "لا أخطاء JavaScript في الكونسول",
+      "ok": true,
+      "detail": ""
+    }
+  ]
+}

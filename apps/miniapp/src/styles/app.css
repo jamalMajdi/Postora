@@ -1,0 +1,545 @@
+/** تنسيقات التخطيط والمكونات الخاصة بـ Postora. */
+
+/* ============================ الهيكل ============================ */
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--color-bg-secondary);
+}
+
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  height: var(--header-height);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-4);
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.app-header__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-weight: 800;
+  font-size: 17px;
+  letter-spacing: -0.2px;
+}
+
+.app-header__logo {
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, var(--color-accent), #7c3aed);
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-size: 15px;
+}
+
+.app-main {
+  flex: 1;
+  padding: var(--space-4);
+  padding-bottom: calc(var(--nav-height) + var(--safe-bottom) + var(--space-4));
+  max-width: 720px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.app-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  height: calc(var(--nav-height) + var(--safe-bottom));
+  padding-bottom: var(--safe-bottom);
+  display: flex;
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+}
+
+.app-nav__item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-text-tertiary);
+  transition: color 0.15s ease;
+}
+
+.app-nav__item--active {
+  color: var(--color-accent);
+}
+
+.app-nav__icon {
+  font-size: 19px;
+  line-height: 1;
+}
+
+.app-nav__badge {
+  position: absolute;
+  transform: translate(14px, -10px);
+  background: var(--color-accent);
+  color: #fff;
+  font-size: 10px;
+  min-width: 16px;
+  height: 16px;
+  border-radius: var(--radius-full);
+  display: grid;
+  place-items: center;
+  padding: 0 4px;
+}
+
+/* ============================ لوحة التحكم ============================ */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-3);
+}
+
+.stat-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  box-shadow: var(--shadow-sm);
+}
+
+.stat-card__value {
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+.stat-card__label {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.hero {
+  background: linear-gradient(135deg, var(--color-accent), #7c3aed);
+  color: #fff;
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-md);
+}
+
+.hero__title {
+  font-size: 20px;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+
+.hero__subtitle {
+  font-size: 13px;
+  opacity: 0.9;
+  margin-bottom: var(--space-4);
+}
+
+.hero .btn--primary {
+  background: #fff;
+  color: var(--color-accent);
+}
+
+.section-title {
+  font-size: 15px;
+  font-weight: 700;
+  margin: var(--space-4) 0 var(--space-3);
+}
+
+/* ============================ المحرر ============================ */
+.editor-layout {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.toolbar {
+  display: flex;
+  gap: var(--space-1);
+  overflow-x: auto;
+  padding: var(--space-2);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  scrollbar-width: none;
+}
+
+.toolbar::-webkit-scrollbar {
+  display: none;
+}
+
+.toolbar__btn {
+  min-width: 40px;
+  height: 36px;
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+  background: transparent;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+}
+
+.toolbar__btn:hover {
+  background: var(--color-bg-secondary);
+  color: var(--color-text);
+}
+
+.editor-textarea {
+  width: 100%;
+  min-height: 320px;
+  resize: vertical;
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  line-height: 1.7;
+  outline: none;
+}
+
+.editor-textarea:focus {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px var(--color-accent-soft);
+}
+
+.editor-tabs {
+  display: flex;
+  gap: var(--space-1);
+  padding: 4px;
+  background: var(--color-bg-secondary);
+  border-radius: var(--radius-md);
+}
+
+.editor-tabs__tab {
+  flex: 1;
+  padding: 8px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.editor-tabs__tab--active {
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: var(--shadow-sm);
+}
+
+.editor-footer {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  /* يبقى ظاهرًا فوق شريط التنقل السفلي أثناء التمرير */
+  position: sticky;
+  bottom: calc(var(--nav-height) + var(--safe-bottom) + var(--space-2));
+  background: var(--color-bg-secondary);
+  padding: var(--space-2) 0;
+  z-index: 10;
+}
+
+.editor-footer .btn {
+  flex: 1;
+  min-width: 130px;
+}
+
+.stats-bar {
+  display: flex;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  padding: var(--space-3);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+.stats-bar strong {
+  color: var(--color-text);
+}
+
+/* ============================ معاينة تلجرام ============================ */
+.tg-preview {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  background: linear-gradient(180deg, #cfe3f5 0%, #e6f0fa 100%);
+  border-radius: var(--radius-md);
+  min-height: 200px;
+}
+
+[data-theme='dark'] .tg-preview {
+  background: linear-gradient(180deg, #17212b 0%, #1c2733 100%);
+}
+
+.tg-message {
+  max-width: 92%;
+  background: var(--color-surface);
+  border-radius: 12px;
+  border-bottom-left-radius: 4px;
+  padding: 8px 12px;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.12);
+  font-size: 14.5px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: var(--color-text);
+  direction: auto;
+  unicode-bidi: plaintext;
+}
+
+[dir='rtl'] .tg-message {
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 4px;
+}
+
+.tg-message__index {
+  font-size: 10px;
+  color: var(--color-text-tertiary);
+  margin-bottom: 2px;
+  font-weight: 600;
+}
+
+.tg-message b {
+  font-weight: 700;
+}
+
+.tg-message i {
+  font-style: italic;
+}
+
+.tg-message s {
+  text-decoration: line-through;
+}
+
+.tg-message code {
+  font-family: var(--font-mono);
+  background: var(--color-bg-secondary);
+  padding: 1px 4px;
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+.tg-message pre {
+  font-family: var(--font-mono);
+  background: var(--color-bg-secondary);
+  padding: var(--space-2);
+  border-radius: 6px;
+  overflow-x: auto;
+  font-size: 13px;
+  margin: 4px 0;
+}
+
+.tg-message blockquote {
+  margin: 4px 0;
+  padding-inline-start: var(--space-3);
+  border-inline-start: 3px solid var(--color-accent);
+  color: var(--color-text-secondary);
+}
+
+.tg-warning {
+  font-size: 12.5px;
+  color: var(--color-warning);
+  background: rgba(217, 119, 6, 0.1);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-3);
+}
+
+/* ============================ القوائم ============================ */
+.list-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-2);
+}
+
+.list-item__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.list-item__title {
+  font-weight: 700;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.list-item__meta {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ============================ الورقة السفلية ============================ */
+.sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.5);
+  z-index: 40;
+  display: flex;
+  align-items: flex-end;
+  animation: fade-in 0.15s ease;
+}
+
+.sheet {
+  width: 100%;
+  background: var(--color-surface);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  padding: var(--space-5) var(--space-4) calc(var(--space-5) + var(--safe-bottom));
+  max-height: 88vh;
+  overflow-y: auto;
+  animation: slide-up 0.2s ease;
+}
+
+.sheet__title {
+  font-size: 17px;
+  margin-bottom: var(--space-4);
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes slide-up {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+}
+
+/* ============================ رسائل عابرة ============================ */
+.toast-stack {
+  position: fixed;
+  top: calc(var(--header-height) + var(--space-3));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  width: calc(100% - var(--space-6));
+  max-width: 420px;
+  pointer-events: none;
+}
+
+.toast {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: var(--shadow-md);
+  animation: slide-down 0.2s ease;
+  pointer-events: auto;
+}
+
+.toast--success {
+  background: var(--color-success);
+  color: #fff;
+}
+
+.toast--error {
+  background: var(--color-danger);
+  color: #fff;
+}
+
+.toast--info {
+  background: var(--color-accent);
+  color: #fff;
+}
+
+@keyframes slide-down {
+  from {
+    transform: translateY(-8px);
+    opacity: 0;
+  }
+}
+
+/* ============================ شاشة التحميل/الخطأ ============================ */
+.center-screen {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  padding: var(--space-6);
+  text-align: center;
+}
+
+.brand-mark {
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, var(--color-accent), #7c3aed);
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-size: 30px;
+  font-weight: 800;
+  box-shadow: var(--shadow-md);
+}
+
+/* ============================ إعدادات ============================ */
+.segmented {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  background: var(--color-bg-secondary);
+  border-radius: var(--radius-md);
+}
+
+.segmented__option {
+  flex: 1;
+  padding: 9px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.segmented__option--active {
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ============================ شاشات عريضة ============================ */
+@media (min-width: 640px) {
+  .stats-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .editor-textarea {
+    min-height: 420px;
+  }
+}

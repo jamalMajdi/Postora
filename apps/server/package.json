@@ -1,0 +1,31 @@
+{
+  "name": "@postora/server",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@postora/markdown-engine": "1.0.0",
+    "@postora/shared": "1.0.0",
+    "dotenv": "18.0.9",
+    "express": "5.3.0",
+    "express-rate-limit": "8.7.2",
+    "helmet": "8.3.0",
+    "jose": "6.2.14",
+    "pg": "8.23.1",
+    "pino": "10.4.0",
+    "pino-http": "11.0.0",
+    "telegraf": "4.16.3",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "supertest": "7.3.1",
+    "vitest": "^3.2.4"
+  }
+}

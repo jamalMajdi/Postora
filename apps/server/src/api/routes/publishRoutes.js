@@ -111,5 +111,31 @@ export function createPublishRoutes({ publishingService }) {
     }
   });
 
+  /**
+   * DELETE /api/publications/:id
+   * يحذف رسائل المنشور من قناته على تلجرام.
+   *
+   * الحماية: JWT + ملكية (findForUser) + **فحص حي** لصلاحيات البوت والمستخدم
+   * داخل الخدمة. الحذف الجزئي يُبلَّغ عنه بوضوح ولا يُدّعى نجاح كامل.
+   */
+  router.delete('/publications/:id', validate(idParamSchema, 'params'), async (req, res, next) => {
+    try {
+      const result = await publishingService.deletePublication({
+        user: req.user,
+        publicationId: req.validated.params.id
+      });
+      res.json({
+        ok: true,
+        data: {
+          publication: result.publication,
+          deletedCount: result.deletedCount,
+          alreadyDeleted: result.alreadyDeleted
+        }
+      });
+    } catch (error) {
+      next(error);
+    }
+  });
+
   return router;
 }

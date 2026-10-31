@@ -8,6 +8,7 @@ export default {
     home: 'Home',
     editor: 'Editor',
     drafts: 'Drafts',
+    publications: 'Posts',
     channels: 'Channels'
   },
   common: {
@@ -81,6 +82,32 @@ export default {
       codeBlock: 'Code block'
     }
   },
+  publications: {
+    title: 'Publications',
+    subtitle: 'Everything you published — with the option to delete from the channel',
+    empty: 'No publications yet.',
+    status: {
+      published: 'Published',
+      failed: 'Failed',
+      pending: 'Pending',
+      publishing: 'Publishing',
+      cancelled: 'Cancelled',
+      deleted: 'Deleted'
+    },
+    messages: 'messages',
+    chars: 'chars',
+    delete: 'Delete from channel',
+    deleteConfirm: 'This post will be deleted from its Telegram channel. Continue?',
+    deleting: 'Deleting…',
+    deleted: 'Post deleted from the channel',
+    deletedPartial: 'Partially deleted — some messages were not removed',
+    alreadyDeleted: 'Post is already deleted',
+    cannotDelete: 'This post cannot be deleted',
+    loadMore: 'Load more',
+    publishedAt: 'Published at',
+    openChannel: 'Open channel'
+  },
+
   drafts: {
     title: 'Drafts',
     empty: 'No drafts yet. Start a new post.',

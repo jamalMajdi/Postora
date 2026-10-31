@@ -543,3 +543,118 @@
     min-height: 420px;
   }
 }
+
+/* ==================== صفحات المنشورات ==================== */
+.page-header {
+  margin-bottom: var(--space-3);
+}
+
+.page-title {
+  font-size: 20px;
+  font-weight: 800;
+  margin: 0 0 2px;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.list-item__main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.list-item__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  white-space: normal;
+}
+
+/* شارات الحالة */
+.badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  line-height: 1.6;
+}
+
+.badge--published {
+  color: #0f7b4f;
+  background: rgba(34, 160, 107, 0.15);
+}
+
+.badge--failed {
+  color: #b42318;
+  background: rgba(220, 38, 38, 0.12);
+}
+
+.badge--deleted {
+  color: var(--color-text-secondary);
+  background: rgba(107, 114, 128, 0.15);
+  text-decoration: line-through;
+}
+
+.badge--pending,
+.badge--publishing {
+  color: #a16207;
+  background: rgba(217, 119, 6, 0.14);
+}
+
+.badge--cancelled {
+  color: var(--color-text-secondary);
+  background: rgba(107, 114, 128, 0.12);
+}
+
+/* أزرار */
+.btn--danger {
+  color: #b42318;
+  border-color: rgba(220, 38, 38, 0.35);
+}
+
+.btn--danger:hover:not(:disabled) {
+  background: rgba(220, 38, 38, 0.08);
+}
+
+.btn--sm {
+  padding: 6px 12px;
+  font-size: 13px;
+  align-self: flex-start;
+}
+
+.btn--ghost {
+  background: transparent;
+  border: 1px solid var(--color-border);
+}
+
+/* هياكل التحميل */
+.skeleton-card {
+  height: 76px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(
+    90deg,
+    var(--color-surface) 25%,
+    var(--color-bg-secondary) 50%,
+    var(--color-surface) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s infinite linear;
+  margin-bottom: var(--space-2);
+}
+
+@keyframes skeleton-shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}

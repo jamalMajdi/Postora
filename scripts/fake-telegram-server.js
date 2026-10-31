@@ -215,6 +215,15 @@ const server = http.createServer(async (req, res) => {
       });
     }
 
+    case 'deleteMessage': {
+      const idx = messages.findIndex(
+        (m) => m.message_id === payload.message_id && String(m.chatId) === String(payload.chat_id)
+      );
+      if (idx === -1) return fail(400, 'Bad Request: message to delete not found');
+      messages.splice(idx, 1);
+      return ok(true);
+    }
+
     case 'answerCallbackQuery':
     case 'deleteWebhook':
     case 'setWebhook':

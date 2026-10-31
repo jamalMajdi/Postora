@@ -317,6 +317,93 @@ export class PublishingService {
    * نشر مباشر من البوت بعد ملف .md (يجمع prepare + execute).
    * يُستخدم فقط حيث لا توجد مرحلة تأكيد منفصلة.
    */
+  /**
+   * حذف منشور من قناته على تلجرام.
+   *
+   * قرارات:
+   *  - نحذف الرسائل المخزَّنة في `telegram_message_ids` بالترتيب.
+   *  - **فحص حي للصلاحيات أولًا** (نفس مبدأ النشر): البوت مسؤول + المستخدم يملك القناة الآن.
+   *  - الحذف الجزئي ممكن (رسالة محذوفة مسبقًا يدويًا) ⇒ نتجاهل "message to delete not found"
+   *    ونعتبره محذوفًا، ونكمل الباقي.
+   *  - الحالة في القاعدة تصبح `deleted` فقط إذا حُذفت **كل** الرسائل أو كانت محذوفة سابقًا.
+   *  - لا يمكن حذف منشور بحالة `pending`/`publishing` (لم يُنشر بعد) ⇒ PUBLICATION_NOT_PUBLISHED.
+   *
+   * @param {{user: object, publicationId: string}} params
+   * @returns {Promise<{publication: object, deletedCount: number, alreadyDeleted: number}>}
+   */
+  async deletePublication({ user, publicationId }) {
+    const publication = await publicationRepository.findForUser(publicationId, user.id);
+    if (!publication) throw new AppError(ErrorCode.PUBLICATION_NOT_FOUND);
+
+    if (!['published', 'deleted', 'failed'].includes(publication.status)) {
+      throw new AppError(ErrorCode.PUBLICATION_NOT_PENDING, {
+        details: { status: publication.status, hint: 'لم يُنشر بعد — استخدم /cancel' }
+      });
+    }
+
+    const messageIds = publication.telegram_message_ids || [];
+    if (publication.status === 'deleted' || messageIds.length === 0) {
+      return { publication, deletedCount: 0, alreadyDeleted: messageIds.length };
+    }
+
+    const channel = await channelRepository.findById(publication.channel_id);
+    if (!channel) throw new AppError(ErrorCode.CHANNEL_NOT_FOUND);
+
+    // فحص حي — لا نعتمد على المخزَّن (نفس مبدأ النشر).
+    // verifyChannelAccess يرفع AppError عند أي فشل، ويعيد القناة عند النجاح.
+    await verifyChannelAccess(this.gateway, channel.telegram_chat_id, user.telegram_user_id);
+
+    let deletedCount = 0;
+    let alreadyDeleted = 0;
+    const failures = [];
+
+    for (const messageId of messageIds) {
+      try {
+        await this.gateway.call('deleteMessage', {
+          chat_id: channel.telegram_chat_id,
+          message_id: messageId
+        });
+        deletedCount += 1;
+      } catch (error) {
+        const description = String(error?.response?.description || error?.message || '');
+        // الرسالة محذوفة مسبقًا (يدويًا أو بحذف القناة) ⇒ ليست فشلًا
+        if (/message to delete not found|message can't be deleted/i.test(description)) {
+          alreadyDeleted += 1;
+        } else {
+          failures.push({ messageId, description });
+        }
+      }
+      // احترام حدّ معدل تلجرام
+      await new Promise((resolve) => setTimeout(resolve, 400));
+    }
+
+    if (failures.length > 0) {
+      await publicationRepository.addLog({
+        publicationId,
+        stage: 'delete',
+        level: 'error',
+        details: { failures }
+      });
+      throw new AppError(ErrorCode.PUBLISH_FAILED, {
+        details: {
+          reason: 'delete_partial_failure',
+          deletedCount,
+          alreadyDeleted,
+          failedCount: failures.length
+        }
+      });
+    }
+
+    const updated = await publicationRepository.markDeleted(publicationId, { deletedCount, alreadyDeleted });
+
+    this.logger?.info(
+      { publicationId, deletedCount, alreadyDeleted },
+      'publication deleted from telegram'
+    );
+
+    return { publication: updated ?? publication, deletedCount, alreadyDeleted };
+  }
+
   async publishNow({ user, channelId, contentMarkdown, source = 'bot', draftId = null }) {
     const { publication, preview } = await this.preparePublication({
       user,

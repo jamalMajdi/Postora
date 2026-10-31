@@ -6,6 +6,7 @@ import { DashboardPage } from './pages/DashboardPage.jsx';
 import { EditorPage } from './pages/EditorPage.jsx';
 import { DraftsPage } from './pages/DraftsPage.jsx';
 import { ChannelsPage } from './pages/ChannelsPage.jsx';
+import { PublicationsPage } from './pages/PublicationsPage.jsx';
 import { getUserMessage } from '@postora/shared';
 import { initTelegramWebApp, getThemeParams, isDarkTheme } from './lib/telegramSdk.js';
 
@@ -104,6 +105,8 @@ export default function App() {
             onNavigate={setRoute}
           />
         ) : null}
+
+        {route === 'publications' ? <PublicationsPage /> : null}
 
         {route === 'channels' ? <ChannelsPage /> : null}
 

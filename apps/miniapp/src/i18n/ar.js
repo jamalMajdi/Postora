@@ -8,6 +8,7 @@ export default {
     home: 'الرئيسية',
     editor: 'المحرر',
     drafts: 'المسودات',
+    publications: 'المنشورات',
     channels: 'القنوات'
   },
   common: {
@@ -81,6 +82,32 @@ export default {
       codeBlock: 'كتلة كود'
     }
   },
+  publications: {
+    title: 'المنشورات',
+    subtitle: 'كل ما نشرته — مع إمكانية الحذف من القناة',
+    empty: 'لا يوجد منشورات بعد.',
+    status: {
+      published: 'منشور',
+      failed: 'فاشل',
+      pending: 'قيد الانتظار',
+      publishing: 'جارٍ النشر',
+      cancelled: 'ملغى',
+      deleted: 'محذوف'
+    },
+    messages: 'رسالة',
+    chars: 'حرف',
+    delete: 'حذف من القناة',
+    deleteConfirm: 'سيُحذف هذا المنشور من قناته على تلجرام. هل تريد المتابعة؟',
+    deleting: 'جارٍ الحذف…',
+    deleted: 'تم حذف المنشور من القناة',
+    deletedPartial: 'حُذف جزئيًا — بعض الرسائل لم تُحذف',
+    alreadyDeleted: 'المنشور محذوف بالفعل',
+    cannotDelete: 'لا يمكن حذف هذا المنشور',
+    loadMore: 'تحميل المزيد',
+    publishedAt: 'تاريخ النشر',
+    openChannel: 'فتح القناة'
+  },
+
   drafts: {
     title: 'المسودات',
     empty: 'لا توجد مسودات. ابدأ بمقال جديد.',

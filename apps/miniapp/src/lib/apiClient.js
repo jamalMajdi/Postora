@@ -131,6 +131,7 @@ export const apiClient = {
   publish: (payload) => api('/publications', { method: 'POST', body: payload }),
 
   listPublications: () => api('/publications'),
+  deletePublication: (id) => api(`/publications/${id}`, { method: 'DELETE' }),
 
   isAuthenticated: () => Boolean(state.token),
   clearSession: () => {

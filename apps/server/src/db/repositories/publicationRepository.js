@@ -117,6 +117,25 @@ export async function markCancelled(id, userId) {
 }
 
 /**
+ * يعلّم المنشور كمحذوف من تلجرام.
+ * لا يغيّر الحالة إلا إذا كان منشورًا فعليًا (published) — حماية من سباق حذف/نشر.
+ *
+ * @returns {Promise<object|null>} الصف المحدَّث أو null إن كانت الحالة تغيّرت
+ */
+export async function markDeleted(id, { deletedCount = 0, alreadyDeleted = 0 } = {}) {
+  const { rows } = await query(
+    `UPDATE publications
+        SET status = 'deleted',
+            deleted_at = NOW(),
+            deleted_messages_count = $2
+      WHERE id = $1 AND status = 'published'
+      RETURNING *`,
+    [id, deletedCount + alreadyDeleted]
+  );
+  return rows[0] || null;
+}
+
+/**
  * يعيد الطلب العالق في 'publishing' إلى 'pending' (بعد انهيار عملية سابقة).
  * يُستخدم فقط من مهمة تنظيف/تشخيص يدوية — ليس تلقائيًا مع النشر.
  */

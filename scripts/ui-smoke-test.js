@@ -137,6 +137,21 @@ async function main() {
     })
     .catch(() => null);
 
+  // يُرجع دالة تُنقر على عنصر تنقل بمعرّفه الدلالي بدل الفهرس الرقمي
+  const navClick = (key) =>
+    page.evaluate((routeKey) => {
+      const items = [...document.querySelectorAll('.app-nav__item')];
+      const item = items.find(
+        (el) =>
+          el.getAttribute('data-route') === routeKey ||
+          el.dataset.route === routeKey
+      );
+      if (item) return item.click();
+      // احتياط: خرائط الفهارس المعروفة (home, editor, drafts, publications, channels)
+      const fallback = { home: 0, editor: 1, drafts: 2, publications: 3, channels: 4 };
+      return items[fallback[routeKey]]?.click();
+    }, key);
+
   /* ---------------- 1) تحميل لوحة التحكم ---------------- */
   await page.goto(APP_URL, { waitUntil: 'networkidle2', timeout: 30000 });
   await page.waitForFunction(
@@ -153,7 +168,7 @@ async function main() {
   await page.screenshot({ path: path.join(ARTIFACTS, '01-dashboard.png') });
 
   /* ---------------- 2) الانتقال إلى المحرر ---------------- */
-  await page.evaluate(() => document.querySelectorAll('.app-nav__item')[1]?.click());
+  await navClick('editor');
   await page.waitForSelector('.editor-textarea', { timeout: 10000 });
   log('فتح المحرر', true, 'editor textarea visible');
   await page.screenshot({ path: path.join(ARTIFACTS, '02-editor-empty.png') });
@@ -213,7 +228,7 @@ async function main() {
   await page.screenshot({ path: path.join(ARTIFACTS, '03-preview.png') });
 
   /* ---------------- 4) ربط قناة ---------------- */
-  await page.evaluate(() => document.querySelectorAll('.app-nav__item')[3]?.click());
+  await navClick('channels');
   await new Promise((resolve) => setTimeout(resolve, 500));
 
   await page.evaluate(() => {
@@ -240,7 +255,7 @@ async function main() {
   await page.screenshot({ path: path.join(ARTIFACTS, '05-channels.png') });
 
   /* ---------------- 5) النشر ---------------- */
-  await page.evaluate(() => document.querySelectorAll('.app-nav__item')[1]?.click());
+  await navClick('editor');
   await page.waitForSelector('.editor-textarea', { timeout: 10000 });
 
   // إعادة كتابة المحتوى (الصفحة أُعيد تركيبها)
@@ -275,7 +290,7 @@ async function main() {
   });
   await new Promise((resolve) => setTimeout(resolve, 1500));
 
-  await page.evaluate(() => document.querySelectorAll('.app-nav__item')[2]?.click());
+  await navClick('drafts');
   await page.waitForFunction(
     () => document.body.innerText.includes('مقال اختباري') || document.body.innerText.includes('مسودة'),
     { timeout: 15000 }

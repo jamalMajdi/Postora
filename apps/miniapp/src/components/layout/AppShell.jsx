@@ -11,6 +11,7 @@ export function AppShell({ children, currentRoute, onNavigate, badges = {} }) {
     { key: 'home', icon: '🏠', label: t('nav.home') },
     { key: 'editor', icon: '✍️', label: t('nav.editor') },
     { key: 'drafts', icon: '📝', label: t('nav.drafts'), badge: badges.drafts },
+    { key: 'publications', icon: '📰', label: t('nav.publications') },
     { key: 'channels', icon: '📢', label: t('nav.channels'), badge: channels.length || null }
   ];
 
@@ -41,6 +42,7 @@ export function AppShell({ children, currentRoute, onNavigate, badges = {} }) {
           <button
             key={item.key}
             type="button"
+            data-route={item.key}
             className={`app-nav__item${currentRoute === item.key ? ' app-nav__item--active' : ''}`}
             onClick={() => onNavigate(item.key)}
             aria-current={currentRoute === item.key ? 'page' : undefined}

@@ -43,6 +43,7 @@ export const ErrorCode = Object.freeze({
   // النشر
   PUBLICATION_NOT_FOUND: 'PUBLICATION_NOT_FOUND',
   PUBLICATION_NOT_PENDING: 'PUBLICATION_NOT_PENDING',
+  PUBLICATION_NOT_PUBLISHED: 'PUBLICATION_NOT_PUBLISHED',
   PUBLICATION_ALREADY_PROCESSED: 'PUBLICATION_ALREADY_PROCESSED',
   PUBLICATION_DUPLICATE_WARNING: 'PUBLICATION_DUPLICATE_WARNING',
   PUBLISH_FAILED: 'PUBLISH_FAILED',
@@ -82,6 +83,7 @@ export const ErrorMessagesAr = Object.freeze({
   [ErrorCode.CHANNEL_INVALID_TYPE]: 'هذا النوع من المحادثات غير مدعوم. اختر قناة.',
   [ErrorCode.PUBLICATION_NOT_FOUND]: 'طلب النشر غير موجود.',
   [ErrorCode.PUBLICATION_NOT_PENDING]: 'طلب النشر لم يعد في حالة انتظار.',
+  [ErrorCode.PUBLICATION_NOT_PUBLISHED]: 'هذا المنشور لم يُنشر بعد — لا يمكن حذفه من القناة.',
   [ErrorCode.PUBLICATION_ALREADY_PROCESSED]: 'تمت معالجة طلب النشر بالفعل.',
   [ErrorCode.PUBLICATION_DUPLICATE_WARNING]:
     'نشرت هذا المحتوى نفسه في هذه القناة قبل قليل. أعد المحاولة مع تأكيد النشر المكرر إن كنت متأكدًا.',
@@ -120,6 +122,7 @@ export const ErrorMessagesEn = Object.freeze({
   [ErrorCode.CHANNEL_INVALID_TYPE]: 'This chat type is not supported. Please select a channel.',
   [ErrorCode.PUBLICATION_NOT_FOUND]: 'Publish request not found.',
   [ErrorCode.PUBLICATION_NOT_PENDING]: 'The publish request is no longer pending.',
+  [ErrorCode.PUBLICATION_NOT_PUBLISHED]: 'This post has not been published yet — nothing to delete.',
   [ErrorCode.PUBLICATION_ALREADY_PROCESSED]: 'This publish request has already been processed.',
   [ErrorCode.PUBLICATION_DUPLICATE_WARNING]:
     'You published this exact content to this channel recently. Retry with explicit duplicate confirmation if you are sure.',

@@ -207,6 +207,15 @@ export function createFakeTelegram({ token = '123456:TEST_TOKEN_NOT_REAL' } = {}
         return ok({ message_id: target.message_id, text: target.text });
       }
 
+      case 'deleteMessage': {
+        const idx = state.messages.findIndex(
+          (m) => m.message_id === payload.message_id && String(m.chatId) === String(payload.chat_id)
+        );
+        if (idx === -1) return fail(400, 'Bad Request: message to delete not found');
+        state.messages.splice(idx, 1);
+        return ok(true);
+      }
+
       case 'deleteWebhook':
       case 'setWebhook':
         return ok(true);

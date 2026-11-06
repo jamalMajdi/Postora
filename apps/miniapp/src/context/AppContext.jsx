@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { apiClient, createSession } from '../lib/apiClient.js';
 import { getUnsafeUser, isTelegramWebApp } from '../lib/telegramSdk.js';
-import { detectLocale, translate, DIRECTION } from '../i18n/index.js';
+import { detectLocale, translate, formatCount, DIRECTION } from '../i18n/index.js';
 
 /**
  * سياق التطبيق: الجلسة، اللغة، القنوات، والإشعارات.
@@ -20,13 +20,16 @@ export function AppProvider({ children }) {
   const [locale, setLocale] = useState(() => detectLocale(getUnsafeUser()?.language_code));
   const [toasts, setToasts] = useState([]);
 
+  // مدة عرض الرسالة — نفس القيمة تُستهلك في شريط التقدّم بمكوّن Toast
+  const TOAST_DURATION = 3600;
+
   /* ------------------------------ الإشعارات ------------------------------ */
   const pushToast = useCallback((message, variant = 'info') => {
     const id = Math.random().toString(36).slice(2);
     setToasts((current) => [...current, { id, message, variant }]);
     setTimeout(() => {
       setToasts((current) => current.filter((toast) => toast.id !== id));
-    }, 3500);
+    }, TOAST_DURATION);
   }, []);
 
   const dismissToast = useCallback((id) => {
@@ -35,6 +38,9 @@ export function AppProvider({ children }) {
 
   /* ------------------------------ الترجمة ------------------------------ */
   const t = useCallback((path, replacements) => translate(locale, path, replacements), [locale]);
+
+  /** جمع الأعداد بصيغة صحيحة لكل لغة (3 رسائل / 3 messages). */
+  const count = useCallback((n, unit) => formatCount(locale, n, unit), [locale]);
   const dir = DIRECTION[locale] || 'rtl';
 
   useEffect(() => {
@@ -127,9 +133,11 @@ export function AppProvider({ children }) {
       locale,
       dir,
       t,
+      count,
       toasts,
       pushToast,
       dismissToast,
+      TOAST_DURATION,
       bootstrap,
       refreshAll,
       changeLocale,
@@ -148,9 +156,11 @@ export function AppProvider({ children }) {
       locale,
       dir,
       t,
+      count,
       toasts,
       pushToast,
       dismissToast,
+      TOAST_DURATION,
       bootstrap,
       refreshAll,
       changeLocale,

@@ -1,12 +1,20 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useApp } from '../context/AppContext.jsx';
 import { apiClient } from '../lib/apiClient.js';
-import { EmptyState } from '../components/ui/EmptyState.jsx';
+import { EmptyState, SkeletonCard } from '../components/ui/EmptyState.jsx';
+import {
+  Icon,
+  Newspaper,
+  Trash2,
+  RefreshCw,
+  Clock,
+  FileText
+} from '../components/ui/icons.jsx';
 
 /**
  * صفحة المنشورات — سجل النشر + **حذف من القناة**.
  *
- * قرارات:
+ * قرارات (محفوظة من النسخة السابقة):
  *  - الحذف يُنفَّذ على الخادم مع فحص حي للصلاحيات؛ الواجهة لا تقرر شيئًا أمنيًا.
  *  - نطلب تأكيدًا صريحًا قبل الحذف (لا يمكن التراجع).
  *  - الحذف الجزئي يُعرض بوضوح بدل ادّعاء نجاح كامل.
@@ -15,11 +23,12 @@ import { EmptyState } from '../components/ui/EmptyState.jsx';
 const STATUS_KEYS = ['published', 'failed', 'deleted', 'pending', 'publishing', 'cancelled'];
 
 export function PublicationsPage() {
-  const { t, locale, pushToast } = useApp();
+  const { t, count, locale, pushToast } = useApp();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [busyId, setBusyId] = useState(null);
   const [error, setError] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -53,7 +62,6 @@ export function PublicationsPage() {
         pushToast(t('publications.alreadyDeleted'), 'info');
       }
 
-      // تحديث محلي فوري
       setItems((current) =>
         current.map((item) =>
           item.id === publication.id
@@ -80,68 +88,122 @@ export function PublicationsPage() {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="page">
-        <div className="skeleton-card" />
-        <div className="skeleton-card" />
-      </div>
-    );
-  }
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await load();
+    setRefreshing(false);
+  };
+
+  const publishedCount = items.filter((item) => item.status === 'published').length;
 
   return (
-    <div className="page">
-      <header className="page-header">
-        <h1 className="page-title">{t('publications.title')}</h1>
-        <p className="muted">{t('publications.subtitle')}</p>
-      </header>
+    <div className="page" data-page="publications">
+      <div className="page-topbar">
+        <header className="page-header">
+          <h1 className="page-title">{t('publications.title')}</h1>
+          <p className="page-subtitle">{t('publications.subtitle')}</p>
+        </header>
+        <button
+          type="button"
+          className="btn btn--ghost btn--icon btn--sm"
+          onClick={handleRefresh}
+          disabled={refreshing}
+          aria-label={t('common.retry')}
+          title={t('common.retry')}
+        >
+          {refreshing ? (
+            <span className="spinner" />
+          ) : (
+            <Icon icon={RefreshCw} size={15} strokeWidth={2.2} />
+          )}
+        </button>
+      </div>
 
-      {error ? <div className="alert alert--error">{error}</div> : null}
+      {error ? (
+        <div className="alert alert--error">
+          <Icon icon={Newspaper} size={15} strokeWidth={2.2} style={{ flex: '0 0 auto' }} />
+          <span>{error}</span>
+        </div>
+      ) : null}
 
-      {items.length === 0 ? (
-        <EmptyState title={t('publications.empty')} />
+      {loading ? (
+        <div className="stack">
+          <SkeletonCard lines={3} />
+          <SkeletonCard lines={3} />
+          <SkeletonCard lines={3} />
+        </div>
+      ) : items.length === 0 ? (
+        <EmptyState
+          icon={Newspaper}
+          title={t('publications.empty')}
+          description={t('publications.subtitle')}
+        />
       ) : (
-        <ul className="list">
-          {items.map((publication) => {
-            const statusKey = STATUS_KEYS.includes(publication.status)
-              ? publication.status
-              : 'pending';
-            const canDelete = publication.status === 'published';
-            const busy = busyId === publication.id;
+        <>
+          <div className="stats-bar">
+            <span className="row" style={{ gap: 4 }}>
+              <Icon icon={FileText} size={12} strokeWidth={2.2} />
+              {count(items.length, 'messages')}
+            </span>
+            <span className="row" style={{ gap: 4 }}>
+              <Icon icon={Clock} size={12} strokeWidth={2.2} />
+              {t('publications.status.published')}: {publishedCount}
+            </span>
+          </div>
 
-            return (
-              <li key={publication.id} className="list-item">
-                <div className="list-item__main">
-                  <div className="list-item__title">
-                    {publication.channel_title || publication.channelTitle || '—'}
+          <ul className="list">
+            {items.map((publication) => {
+              const statusKey = STATUS_KEYS.includes(publication.status)
+                ? publication.status
+                : 'pending';
+              const canDelete = publication.status === 'published';
+              const busy = busyId === publication.id;
+
+              return (
+                <li key={publication.id} className="list-item">
+                  <div className="list-item__main">
+                    <div className="row row--between row--nowrap">
+                      <span className="list-item__title">
+                        {publication.channel_title || publication.channelTitle || '—'}
+                      </span>
+                      <span className={`badge badge--${statusKey}`}>
+                        {t(`publications.status.${statusKey}`)}
+                      </span>
+                    </div>
+
+                    <div className="list-item__meta">
+                      <span>{count(publication.rendered_messages_count ?? 0, 'messages')}</span>
+                      <span>·</span>
+                      <span>{count(publication.rendered_chars ?? 0, 'chars')}</span>
+                      <span>·</span>
+                      <span>
+                        {formatDate(publication.published_at || publication.created_at)}
+                      </span>
+                    </div>
+
+                    {canDelete ? (
+                      <div className="row" style={{ gap: 'var(--ds-space-2)' }}>
+                        <button
+                          type="button"
+                          className="btn btn--danger btn--sm"
+                          disabled={busy}
+                          onClick={() => handleDelete(publication)}
+                        >
+                          {busy ? (
+                            <span className="spinner" />
+                          ) : (
+                            <Icon icon={Trash2} size={13} strokeWidth={2.3} />
+                          )}
+                          {busy ? t('publications.deleting') : t('publications.delete')}
+                        </button>
+                      </div>
+                    ) : null}
                   </div>
-
-                  <div className="list-item__meta">
-                    <span className={`badge badge--${statusKey}`}>
-                      {t(`publications.status.${statusKey}`)}
-                    </span>
-                    <span className="muted">
-                      {publication.rendered_messages_count ?? 0} {t('publications.messages')} ·{' '}
-                      {publication.rendered_chars ?? 0} {t('publications.chars')}
-                    </span>
-                    <span className="muted">{formatDate(publication.published_at || publication.created_at)}</span>
-                  </div>
-
-                  {canDelete ? (
-                    <button
-                      type="button"
-                      className="btn btn--ghost btn--danger btn--sm"
-                      disabled={busy}
-                      onClick={() => handleDelete(publication)}
-                    >
-                      {busy ? t('publications.deleting') : `🗑 ${t('publications.delete')}`}
-                    </button>
-                  ) : null}
-                </div>
-              </li>
-            );
-          })}
-        </ul>
+                </li>
+              );
+            })}
+          </ul>
+        </>
       )}
     </div>
   );

@@ -10,8 +10,11 @@
     "test": "vitest run --root ../.."
   },
   "dependencies": {
+    "@fontsource-variable/inter": "^5.3.0",
+    "@fontsource/ibm-plex-sans-arabic": "^5.3.0",
     "@postora/markdown-engine": "1.0.0",
     "@postora/shared": "1.0.0",
+    "lucide-react": "^1.70.0",
     "react": "19.3.1",
     "react-dom": "19.3.1"
   },

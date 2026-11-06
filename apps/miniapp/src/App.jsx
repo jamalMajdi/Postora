@@ -15,7 +15,7 @@ import { initTelegramWebApp, getThemeParams, isDarkTheme } from './lib/telegramS
  * التنقل بلا مكتبة توجيه (تطبيق من شاشة واحدة) — أبسط وأخف للـ Mini App.
  */
 export default function App() {
-  const { status, error, t, user, bootstrap } = useApp();
+  const { status, error, t, bootstrap, stats } = useApp();
   const [route, setRoute] = useState('home');
   const [editingDraft, setEditingDraft] = useState(null);
 
@@ -85,7 +85,7 @@ export default function App() {
 
   return (
     <>
-      <AppShell currentRoute={route} onNavigate={setRoute}>
+      <AppShell currentRoute={route} onNavigate={setRoute} badges={{ drafts: stats?.draftsCount }}>
         {route === 'home' ? <DashboardPage onNavigate={setRoute} /> : null}
 
         {route === 'editor' ? (
@@ -110,11 +110,6 @@ export default function App() {
 
         {route === 'channels' ? <ChannelsPage /> : null}
 
-        {user ? (
-          <p className="muted" style={{ textAlign: 'center', marginTop: 'var(--space-6)' }}>
-            {t('settings.telegramId')}: {user.telegramUserId}
-          </p>
-        ) : null}
       </AppShell>
 
       <ToastStack />

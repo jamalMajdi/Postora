@@ -15,6 +15,15 @@ import {
 import { apiClient } from '../lib/apiClient.js';
 import { haptic, showConfirm } from '../lib/telegramSdk.js';
 import { renderPreview, fingerprintPreview } from '../lib/markdown.js';
+import {
+  Icon,
+  Upload,
+  Save,
+  Rocket,
+  Scissors,
+  Megaphone,
+  CircleCheck,
+} from '../components/ui/icons.jsx';
 
 /**
  * محرر المقال: كتابة + معاينة مباشرة (بنفس محرك الخادم) + حفظ مسودة + نشر.
@@ -25,7 +34,7 @@ import { renderPreview, fingerprintPreview } from '../lib/markdown.js';
  *  3) النشر؛ عند تحذير التكرار نطلب تأكيدًا صريحًا ثم نعيد المحاولة بـ allowDuplicate.
  */
 export function EditorPage({ initialDraft = null, onDraftSaved }) {
-  const { t, channels, pushToast, refreshAll, setStats, locale } = useApp();
+  const { t, count, channels, pushToast, refreshAll, setStats, locale } = useApp();
 
   const [content, setContent] = useState(initialDraft?.content_markdown || '');
   const [title, setTitle] = useState(initialDraft?.title || '');
@@ -188,7 +197,7 @@ export function EditorPage({ initialDraft = null, onDraftSaved }) {
       setLastResult(result);
       haptic('success');
       pushToast(
-        `${t('editor.publishSuccess')} — ${result.messageIds?.length ?? 0} ${t('common.messages')}`,
+        `${t('editor.publishSuccess')} — ${count(result.messageIds?.length ?? 0, 'messages')}`,
         'success'
       );
 
@@ -240,7 +249,8 @@ export function EditorPage({ initialDraft = null, onDraftSaved }) {
           disabled={busy !== null}
           title={t('preview.importFile')}
         >
-          📄 {t('preview.importFile')}
+          <Icon icon={Upload} size={14} strokeWidth={2.3} />
+          <span className="editor-titlebar__import-label">{t('preview.importFile')}</span>
         </button>
         <input
           ref={fileInputRef}
@@ -268,7 +278,8 @@ export function EditorPage({ initialDraft = null, onDraftSaved }) {
           <div className="editor-panes__preview" data-testid="preview-pane">
             {messagesCount > 1 ? (
               <div className="preview-split-note">
-                ✂️ {t('preview.splitNote', { n: messagesCount })}
+                <Icon icon={Scissors} size={13} strokeWidth={2.3} />
+                {t('preview.splitNote', { n: messagesCount })}
               </div>
             ) : null}
             <TelegramPreview markdown={content} />
@@ -283,7 +294,10 @@ export function EditorPage({ initialDraft = null, onDraftSaved }) {
           {t('editor.targetChannel')}
         </label>
         {channels.length === 0 ? (
-          <div className="alert alert--info">{t('editor.noChannels')}</div>
+          <div className="alert alert--info">
+            <Icon icon={Megaphone} size={15} strokeWidth={2.2} style={{ flex: '0 0 auto' }} />
+            <span>{t('editor.noChannels')}</span>
+          </div>
         ) : (
           <select
             id="target-channel"
@@ -295,7 +309,7 @@ export function EditorPage({ initialDraft = null, onDraftSaved }) {
               <option key={channel.id} value={channel.id}>
                 {channel.title}
                 {channel.username ? ` (@${channel.username})` : ''}
-                {channel.bot_can_post ? '' : ' — ⚠️'}
+                {channel.bot_can_post ? '' : ' (!)'}
               </option>
             ))}
           </select>
@@ -304,8 +318,10 @@ export function EditorPage({ initialDraft = null, onDraftSaved }) {
 
       {lastResult ? (
         <div className="alert alert--success">
-          ✅ {t('editor.publishSuccess')} — {lastResult.messageIds?.length ?? 0}{' '}
-          {t('common.messages')}
+          <Icon icon={CircleCheck} size={15} strokeWidth={2.3} style={{ flex: '0 0 auto' }} />
+          <span>
+            {t('editor.publishSuccess')} — {count(lastResult.messageIds?.length ?? 0, 'messages')}
+          </span>
         </div>
       ) : null}
 
@@ -316,7 +332,12 @@ export function EditorPage({ initialDraft = null, onDraftSaved }) {
           onClick={handleSaveDraft}
           disabled={busy !== null || isEmpty}
         >
-          {busy === 'draft' ? <span className="spinner" /> : '💾'} {t('editor.saveDraft')}
+          {busy === 'draft' ? (
+            <span className="spinner" />
+          ) : (
+            <Icon icon={Save} size={16} strokeWidth={2.2} />
+          )}
+          {t('editor.saveDraft')}
         </button>
         <button
           type="button"
@@ -324,7 +345,12 @@ export function EditorPage({ initialDraft = null, onDraftSaved }) {
           onClick={() => handlePublish()}
           disabled={busy !== null || isEmpty || channels.length === 0}
         >
-          {busy === 'publish' ? <span className="spinner" /> : '🚀'} {t('editor.publishNow')}
+          {busy === 'publish' ? (
+            <span className="spinner" />
+          ) : (
+            <Icon icon={Rocket} size={16} strokeWidth={2.2} />
+          )}
+          {t('editor.publishNow')}
         </button>
       </div>
     </div>

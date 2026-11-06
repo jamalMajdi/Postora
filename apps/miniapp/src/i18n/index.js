@@ -41,3 +41,58 @@ export function detectLocale(telegramLanguageCode) {
   if (telegramLanguageCode && telegramLanguageCode.startsWith('en')) return 'en';
   return 'ar';
 }
+
+/* ==================================================================== */
+/* جمع الأعداد — العربية تحتاج قواعد خاصة، والإنجليزية مفرد/جمع          */
+/* ==================================================================== */
+
+/**
+ * يعيد الصيغة الصحيحة للوحدة حسب العدد واللغة.
+ *
+ * العربية:
+ *   0        → "لا رسائل"
+ *   1        → "رسالة واحدة"
+ *   2        → "رسالتان"
+ *   3–10     → "N رسائل"
+ *   11+      → "N رسالة"
+ * الإنجليزية: 1 → "1 message" · غيرها → "N messages"
+ *
+ * @param {'ar'|'en'} locale
+ * @param {number} count
+ * @param {'messages'|'chars'|'channels'|'drafts'} unit
+ * @returns {string}
+ */
+export function formatCount(locale, count, unit) {
+  const n = Number.isFinite(count) ? count : 0;
+  const dict = UNIT_FORMS[unit] || UNIT_FORMS.messages;
+
+  if (locale === 'en') {
+    return `${n} ${n === 1 ? dict.en.one : dict.en.other}`;
+  }
+
+  if (n === 0) return dict.ar.zero;
+  if (n === 1) return dict.ar.one;
+  if (n === 2) return dict.ar.two;
+  const mod = n % 100;
+  if (mod >= 3 && mod <= 10) return `${n} ${dict.ar.few}`;
+  return `${n} ${dict.ar.many}`;
+}
+
+const UNIT_FORMS = {
+  messages: {
+    ar: { zero: 'لا رسائل', one: 'رسالة واحدة', two: 'رسالتان', few: 'رسائل', many: 'رسالة' },
+    en: { one: 'message', other: 'messages' }
+  },
+  chars: {
+    ar: { zero: 'لا محارف', one: 'محرف واحد', two: 'محرفان', few: 'محارف', many: 'محرفًا' },
+    en: { one: 'character', other: 'characters' }
+  },
+  channels: {
+    ar: { zero: 'لا قنوات', one: 'قناة واحدة', two: 'قناتان', few: 'قنوات', many: 'قناة' },
+    en: { one: 'channel', other: 'channels' }
+  },
+  drafts: {
+    ar: { zero: 'لا مسودات', one: 'مسودة واحدة', two: 'مسودتان', few: 'مسودات', many: 'مسودة' },
+    en: { one: 'draft', other: 'drafts' }
+  }
+};

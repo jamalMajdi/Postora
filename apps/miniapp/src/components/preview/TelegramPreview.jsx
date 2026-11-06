@@ -6,6 +6,7 @@ import {
 } from '../../lib/markdown.js';
 import { useApp } from '../../context/AppContext.jsx';
 import { isTelegramWebApp } from '../../lib/telegramSdk.js';
+import { Icon, PenLine, Eye, Columns2, Smartphone, CircleCheck, TriangleAlert } from '../ui/icons.jsx';
 
 /**
  * معاينة تحاكي تلجرام.
@@ -61,8 +62,11 @@ export function TelegramPreview({ markdown }) {
         <div className="stack" style={{ gap: 'var(--space-2)' }}>
           {result.warnings.map((warning) => (
             <div className="tg-warning" key={warning.code}>
-              ⚠️ {locale === 'ar' ? warning.messageAr : warning.messageEn}
-              {warning.count > 1 ? ` (×${warning.count})` : ''}
+              <Icon icon={TriangleAlert} size={13} strokeWidth={2.4} />
+              <span>
+                {locale === 'ar' ? warning.messageAr : warning.messageEn}
+                {warning.count > 1 ? ` (×${warning.count})` : ''}
+              </span>
             </div>
           ))}
         </div>
@@ -152,12 +156,17 @@ export function PreviewStats({ markdown }) {
         </span>
       ) : null}
       {(result.warnings?.length ?? 0) > 0 ? (
-        <span style={{ color: 'var(--color-warning)' }}>
-          ⚠️ {(result.warnings || []).length} {t('editor.warnings')}
+        <span
+          className="row"
+          style={{ color: 'var(--ds-warning)', gap: 4, fontWeight: 600 }}
+        >
+          <Icon icon={TriangleAlert} size={12} strokeWidth={2.4} />
+          {(result.warnings || []).length} {t('editor.warnings')}
         </span>
       ) : (
-        <span style={{ color: 'var(--color-success, #16a34a)' }}>
-          ✓ {t('editor.noWarnings')}
+        <span className="row" style={{ color: 'var(--ds-success)', gap: 4, fontWeight: 600 }}>
+          <Icon icon={CircleCheck} size={12} strokeWidth={2.4} />
+          {t('editor.noWarnings')}
         </span>
       )}
     </div>
@@ -175,13 +184,13 @@ export function ViewModeSwitch({ mode, onChange, compact = false }) {
 
   const modes = compact
     ? [
-        { key: 'write', icon: '✍️', label: t('editor.write') },
-        { key: 'preview', icon: '👁️', label: t('editor.telegramPreview') }
+        { key: 'write', icon: PenLine, label: t('editor.write') },
+        { key: 'preview', icon: Eye, label: t('editor.telegramPreview') }
       ]
     : [
-        { key: 'write', icon: '✍️', label: t('editor.write') },
-        { key: 'preview', icon: '👁️', label: t('preview.base') },
-        { key: 'split', icon: '⫲', label: t('preview.sideBySide') }
+        { key: 'write', icon: PenLine, label: t('editor.write') },
+        { key: 'preview', icon: Eye, label: t('preview.base') },
+        { key: 'split', icon: Columns2, label: t('preview.sideBySide') }
       ];
 
   return (
@@ -196,7 +205,8 @@ export function ViewModeSwitch({ mode, onChange, compact = false }) {
           className={`editor-tabs__tab${mode === item.key ? ' editor-tabs__tab--active' : ''}`}
           onClick={() => onChange(item.key)}
         >
-          {item.icon} {item.label}
+          <Icon icon={item.icon} size={15} strokeWidth={2.2} />
+          <span>{item.label}</span>
         </button>
       ))}
     </div>
@@ -229,7 +239,8 @@ export function PreviewScene({ markdown }) {
           {t('preview.cleanScene')}
         </button>
         {!isTelegramWebApp() ? (
-          <span className="muted" style={{ fontSize: 11 }}>
+          <span className="muted row" style={{ fontSize: 11, gap: 4 }}>
+            <Icon icon={Smartphone} size={12} strokeWidth={2.2} />
             {t('preview.standaloneHint')}
           </span>
         ) : null}

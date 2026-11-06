@@ -1,62 +1,232 @@
 /**
- * رموز التصميم (Design tokens).
- * مستوحاة من هوية تلجرام (ألوان themeParams تُطبَّق ديناميكيًا في App.jsx).
+ * Postora Design System — رموز التصميم (Design Tokens)
+ * =====================================================
+ * مصدر واحد للحقيقة: الألوان، المسافات، أنصاف الأقطار، الظلال، الحركة، الطباعة.
+ *
+ * مبادئ:
+ *  - سلّم رمادي محايد + لون تمييز واحد (Indigo) بدرجات محسوبة.
+ *  - كل قيمة بصرية تُستهلك من متغير — لا ألوان مكتوبة داخل المكونات.
+ *  - السطوح (surface) مقاسة بثلاث طبقات: page → card → raised.
+ *  - الوضع الداكن يعيد تعريف الرموز نفسها، لا يستخدم تجاوزات موضعية.
+ *  - ألوان تلجرام (themeParams) تبقى مصدر لون التمييز عند العمل داخل تلجرام.
  */
+
 :root {
-  --color-bg: #ffffff;
-  --color-bg-secondary: #f4f5f7;
-  --color-surface: #ffffff;
-  --color-surface-raised: #ffffff;
-  --color-text: #0f172a;
-  --color-text-secondary: #64748b;
-  --color-text-tertiary: #94a3b8;
-  --color-border: #e2e8f0;
-  --color-accent: #2481cc;
-  --color-accent-hover: #1e6ba8;
-  --color-accent-soft: rgba(36, 129, 204, 0.1);
-  --color-success: #22a06b;
-  --color-warning: #d97706;
-  --color-danger: #dc2626;
-  --color-danger-soft: rgba(220, 38, 38, 0.08);
+  color-scheme: light;
 
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-full: 999px;
+  /* ---------- الأسطح ---------- */
+  --ds-bg: #f7f8fb;
+  --ds-bg-subtle: #eef0f6;
+  --ds-surface: #ffffff;
+  --ds-surface-raised: #ffffff;
+  --ds-surface-sunken: #f2f4f9;
+  --ds-overlay: rgba(15, 20, 34, 0.42);
 
-  --space-1: 4px;
-  --space-2: 8px;
-  --space-3: 12px;
-  --space-4: 16px;
-  --space-5: 20px;
-  --space-6: 24px;
+  /* ---------- النص ---------- */
+  --ds-text: #111827;
+  --ds-text-secondary: #5b6478;
+  --ds-text-tertiary: #8b93a7;
+  --ds-text-inverse: #ffffff;
 
-  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Tahoma,
-    'Noto Sans Arabic', 'Arabic UI Text', sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+  /* ---------- الحدود ---------- */
+  --ds-border: #e6e9f0;
+  --ds-border-strong: #d2d7e3;
+  --ds-border-subtle: #eff1f6;
 
-  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
-  --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.08);
+  /* ---------- لون التمييز (Indigo) ---------- */
+  --ds-accent: #4f46e5;
+  --ds-accent-hover: #4338ca;
+  --ds-accent-active: #3730a3;
+  --ds-accent-soft: rgba(79, 70, 229, 0.08);
+  --ds-accent-soft-strong: rgba(79, 70, 229, 0.14);
+  --ds-accent-contrast: #ffffff;
+  --ds-accent-gradient: linear-gradient(135deg, #6366f1 0%, #4f46e5 55%, #4338ca 100%);
 
-  --header-height: 56px;
-  --nav-height: 64px;
-  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  /* ---------- الحالات الدلالية ---------- */
+  --ds-success: #12946b;
+  --ds-success-soft: rgba(18, 148, 107, 0.1);
+  --ds-warning: #b45309;
+  --ds-warning-soft: rgba(180, 83, 9, 0.1);
+  --ds-danger: #dc2626;
+  --ds-danger-hover: #b91c1c;
+  --ds-danger-soft: rgba(220, 38, 38, 0.08);
+  --ds-info: #0369a1;
+  --ds-info-soft: rgba(3, 105, 161, 0.09);
+
+  /* ---------- المسافات (سلّم 4px) ---------- */
+  --ds-space-0: 0px;
+  --ds-space-1: 4px;
+  --ds-space-2: 8px;
+  --ds-space-3: 12px;
+  --ds-space-4: 16px;
+  --ds-space-5: 20px;
+  --ds-space-6: 24px;
+  --ds-space-8: 32px;
+  --ds-space-10: 40px;
+  --ds-space-12: 48px;
+
+  /* ---------- أنصاف الأقطار ---------- */
+  --ds-radius-xs: 6px;
+  --ds-radius-sm: 10px;
+  --ds-radius-md: 14px;
+  --ds-radius-lg: 18px;
+  --ds-radius-xl: 24px;
+  --ds-radius-full: 999px;
+
+  /* ---------- الظلال ---------- */
+  --ds-shadow-xs: 0 1px 2px rgba(16, 24, 40, 0.05);
+  --ds-shadow-sm: 0 1px 3px rgba(16, 24, 40, 0.07), 0 1px 2px rgba(16, 24, 40, 0.04);
+  --ds-shadow-md: 0 4px 12px rgba(16, 24, 40, 0.07), 0 2px 4px rgba(16, 24, 40, 0.04);
+  --ds-shadow-lg: 0 12px 28px rgba(16, 24, 40, 0.1), 0 4px 8px rgba(16, 24, 40, 0.04);
+  --ds-shadow-xl: 0 24px 48px rgba(16, 24, 40, 0.14);
+  --ds-shadow-accent: 0 6px 18px rgba(79, 70, 229, 0.28);
+  --ds-ring: 0 0 0 3px var(--ds-accent-soft-strong);
+
+  /* ---------- الطباعة ---------- */
+  --ds-font-sans: 'Inter Variable', 'IBM Plex Sans Arabic', -apple-system,
+    BlinkMacSystemFont, 'Segoe UI', Tahoma, sans-serif;
+  --ds-font-arabic: 'IBM Plex Sans Arabic', 'Inter Variable', Tahoma, sans-serif;
+  --ds-font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, 'SF Mono', Menlo,
+    Consolas, monospace;
+
+  --ds-text-2xs: 10.5px;
+  --ds-text-xs: 12px;
+  --ds-text-sm: 13px;
+  --ds-text-base: 14.5px;
+  --ds-text-md: 15.5px;
+  --ds-text-lg: 17px;
+  --ds-text-xl: 20px;
+  --ds-text-2xl: 24px;
+  --ds-text-3xl: 30px;
+
+  --ds-leading-tight: 1.25;
+  --ds-leading-snug: 1.4;
+  --ds-leading-normal: 1.6;
+  --ds-leading-relaxed: 1.75;
+
+  --ds-weight-regular: 400;
+  --ds-weight-medium: 500;
+  --ds-weight-semibold: 600;
+  --ds-weight-bold: 700;
+
+  /* ---------- الحركة ---------- */
+  --ds-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ds-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+  --ds-dur-fast: 120ms;
+  --ds-dur-base: 180ms;
+  --ds-dur-slow: 280ms;
+
+  /* ---------- التخطيط ---------- */
+  --ds-header-h: 58px;
+  --ds-nav-h: 62px;
+  --ds-safe-top: env(safe-area-inset-top, 0px);
+  --ds-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --ds-content-max: 560px;
+  --ds-tap-min: 44px;
+  --ds-z-nav: 40;
+  --ds-z-header: 30;
+  --ds-z-sheet: 60;
+  --ds-z-toast: 70;
+
+  /* ---------- توافق خلفي: أسماء المتغيرات القديمة ----------
+     الصفحات الحالية تستخدم --color-* و--space-* و--radius-*.
+     نُبقيها مُعرَّفة كأسماء مستعارة حتى لا ينكسر أي مكوّن قائم. */
+  --color-bg: var(--ds-surface);
+  --color-bg-secondary: var(--ds-bg);
+  --color-surface: var(--ds-surface);
+  --color-surface-raised: var(--ds-surface-raised);
+  --color-text: var(--ds-text);
+  --color-text-secondary: var(--ds-text-secondary);
+  --color-text-tertiary: var(--ds-text-tertiary);
+  --color-border: var(--ds-border);
+  --color-accent: var(--ds-accent);
+  --color-accent-hover: var(--ds-accent-hover);
+  --color-accent-soft: var(--ds-accent-soft);
+  --color-success: var(--ds-success);
+  --color-warning: var(--ds-warning);
+  --color-danger: var(--ds-danger);
+  --color-danger-soft: var(--ds-danger-soft);
+
+  --radius-sm: var(--ds-radius-sm);
+  --radius-md: var(--ds-radius-md);
+  --radius-lg: var(--ds-radius-lg);
+  --radius-full: var(--ds-radius-full);
+
+  --space-1: var(--ds-space-1);
+  --space-2: var(--ds-space-2);
+  --space-3: var(--ds-space-3);
+  --space-4: var(--ds-space-4);
+  --space-5: var(--ds-space-5);
+  --space-6: var(--ds-space-6);
+
+  --font-sans: var(--ds-font-sans);
+  --font-mono: var(--ds-font-mono);
+
+  --shadow-sm: var(--ds-shadow-sm);
+  --shadow-md: var(--ds-shadow-md);
+
+  --header-height: var(--ds-header-h);
+  --nav-height: var(--ds-nav-h);
+  --safe-bottom: var(--ds-safe-bottom);
 }
 
-/* الوضع الليلي */
+/* ==================================================================== */
+/* الوضع الداكن — نفس الرموز، قيم معاد تعريفها                          */
+/* ==================================================================== */
 [data-theme='dark'] {
-  --color-bg: #0f172a;
-  --color-bg-secondary: #1e293b;
-  --color-surface: #1e293b;
-  --color-surface-raised: #263449;
-  --color-text: #f1f5f9;
-  --color-text-secondary: #94a3b8;
-  --color-text-tertiary: #64748b;
-  --color-border: #334155;
-  --color-accent: #4ea8de;
-  --color-accent-hover: #6bb8e8;
-  --color-accent-soft: rgba(78, 168, 222, 0.16);
-  --color-danger-soft: rgba(220, 38, 38, 0.18);
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.5);
+  color-scheme: dark;
+
+  --ds-bg: #0b0f19;
+  --ds-bg-subtle: #121826;
+  --ds-surface: #151c2b;
+  --ds-surface-raised: #1b2334;
+  --ds-surface-sunken: #101725;
+  --ds-overlay: rgba(3, 6, 12, 0.66);
+
+  --ds-text: #eef1f8;
+  --ds-text-secondary: #a3adc2;
+  --ds-text-tertiary: #78829a;
+  --ds-text-inverse: #0b0f19;
+
+  --ds-border: #232c3e;
+  --ds-border-strong: #33405a;
+  --ds-border-subtle: #1b2331;
+
+  --ds-accent: #7c83ff;
+  --ds-accent-hover: #9297ff;
+  --ds-accent-active: #6a71f5;
+  --ds-accent-soft: rgba(124, 131, 255, 0.14);
+  --ds-accent-soft-strong: rgba(124, 131, 255, 0.22);
+  --ds-accent-contrast: #0b0f19;
+  --ds-accent-gradient: linear-gradient(135deg, #8b91ff 0%, #6d74ff 55%, #5a61f0 100%);
+
+  --ds-success: #34d399;
+  --ds-success-soft: rgba(52, 211, 153, 0.14);
+  --ds-warning: #fbbf24;
+  --ds-warning-soft: rgba(251, 191, 36, 0.14);
+  --ds-danger: #f87171;
+  --ds-danger-hover: #fca5a5;
+  --ds-danger-soft: rgba(248, 113, 113, 0.14);
+  --ds-info: #60c8f5;
+  --ds-info-soft: rgba(96, 200, 245, 0.14);
+
+  --ds-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --ds-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.45), 0 1px 2px rgba(0, 0, 0, 0.3);
+  --ds-shadow-md: 0 4px 14px rgba(0, 0, 0, 0.5), 0 2px 4px rgba(0, 0, 0, 0.3);
+  --ds-shadow-lg: 0 14px 32px rgba(0, 0, 0, 0.55), 0 4px 10px rgba(0, 0, 0, 0.35);
+  --ds-shadow-xl: 0 28px 56px rgba(0, 0, 0, 0.6);
+  --ds-shadow-accent: 0 6px 20px rgba(109, 116, 255, 0.35);
+  --ds-ring: 0 0 0 3px var(--ds-accent-soft-strong);
+
+  /* الأسماء المستعارة تتبع تلقائيًا لأنها var() */
+}
+
+/* احترام تفضيل تقليل الحركة */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --ds-dur-fast: 0.01ms;
+    --ds-dur-base: 0.01ms;
+    --ds-dur-slow: 0.01ms;
+  }
 }

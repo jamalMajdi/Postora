@@ -1,18 +1,24 @@
 import { useApp } from '../../context/AppContext.jsx';
+import { Icon, NAV_ICONS, Languages } from '../ui/icons.jsx';
 
 /**
- * الهيكل العام: رأس + محتوى + شريط تنقل سفلي.
- * مصمم للهاتف أولًا، مع دعم RTL كامل (يعتمد على dir على <html>).
+ * الهيكل العام — رأس + محتوى + شريط تنقل سفلي.
+ *
+ * قرارات التصميم:
+ *  - Mobile first: شريط تنقل سفلي ثابت (نمط التطبيقات الأصلية) داخل تلجرام.
+ *  - على الشاشات العريضة (≥ 900px) يتحول الشريط إلى عمود جانبي (rail) ويُوسَّط المحتوى.
+ *  - الشريط الزجاجي (backdrop-filter) يعطي إحساس iOS/Telegram الأصلي مع fallback صلب.
+ *  - مؤشر التمييز المتحرك (active pill) محسوب بـ flex — لا JS ولا قياسات.
  */
 export function AppShell({ children, currentRoute, onNavigate, badges = {} }) {
   const { t, locale, changeLocale, channels } = useApp();
 
   const navItems = [
-    { key: 'home', icon: '🏠', label: t('nav.home') },
-    { key: 'editor', icon: '✍️', label: t('nav.editor') },
-    { key: 'drafts', icon: '📝', label: t('nav.drafts'), badge: badges.drafts },
-    { key: 'publications', icon: '📰', label: t('nav.publications') },
-    { key: 'channels', icon: '📢', label: t('nav.channels'), badge: channels.length || null }
+    { key: 'home', label: t('nav.home') },
+    { key: 'editor', label: t('nav.editor') },
+    { key: 'drafts', label: t('nav.drafts'), badge: badges.drafts },
+    { key: 'publications', label: t('nav.publications') },
+    { key: 'channels', label: t('nav.channels'), badge: channels.length || null }
   ];
 
   return (
@@ -20,41 +26,61 @@ export function AppShell({ children, currentRoute, onNavigate, badges = {} }) {
       <header className="app-header">
         <div className="app-header__brand">
           <span className="app-header__logo" aria-hidden="true">
-            P
+            <span className="app-header__logo-glyph">P</span>
           </span>
-          <span>Postora</span>
+          <span className="app-header__wordmark">
+            Postora
+            <span className="app-header__tagline">{t('app.tagline')}</span>
+          </span>
         </div>
 
-        <button
-          type="button"
-          className="btn btn--sm btn--ghost"
-          onClick={() => changeLocale(locale === 'ar' ? 'en' : 'ar')}
-          aria-label={t('settings.language')}
-        >
-          {locale === 'ar' ? 'EN' : 'ع'}
-        </button>
+        <div className="app-header__actions">
+          <button
+            type="button"
+            className="app-header__lang"
+            onClick={() => changeLocale(locale === 'ar' ? 'en' : 'ar')}
+            aria-label={t('settings.language')}
+            title={t('settings.language')}
+          >
+            <Icon icon={Languages} size={16} />
+            <span>{locale === 'ar' ? 'EN' : 'ع'}</span>
+          </button>
+        </div>
       </header>
 
-      <main className="app-main">{children}</main>
+      <div className="app-body">
+        <main className="app-main" id="main-content">
+          {children}
+        </main>
 
-      <nav className="app-nav" aria-label={t('app.name')}>
-        {navItems.map((item) => (
-          <button
-            key={item.key}
-            type="button"
-            data-route={item.key}
-            className={`app-nav__item${currentRoute === item.key ? ' app-nav__item--active' : ''}`}
-            onClick={() => onNavigate(item.key)}
-            aria-current={currentRoute === item.key ? 'page' : undefined}
-          >
-            <span className="app-nav__icon" aria-hidden="true">
-              {item.icon}
-            </span>
-            <span>{item.label}</span>
-            {item.badge ? <span className="app-nav__badge">{item.badge}</span> : null}
-          </button>
-        ))}
-      </nav>
+        <nav className="app-nav" aria-label={t('app.name')}>
+          <div className="app-nav__inner">
+            {navItems.map((item) => {
+              const NavIcon = NAV_ICONS[item.key];
+              const active = currentRoute === item.key;
+              return (
+                <button
+                  key={item.key}
+                  type="button"
+                  data-route={item.key}
+                  className={`app-nav__item${active ? ' app-nav__item--active' : ''}`}
+                  onClick={() => onNavigate(item.key)}
+                  aria-current={active ? 'page' : undefined}
+                  aria-label={item.label}
+                >
+                  <span className="app-nav__icon">
+                    <Icon icon={NavIcon} size={20} strokeWidth={active ? 2.3 : 1.9} />
+                    {item.badge ? (
+                      <span className="app-nav__badge">{item.badge > 99 ? '99+' : item.badge}</span>
+                    ) : null}
+                  </span>
+                  <span className="app-nav__label">{item.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </nav>
+      </div>
     </div>
   );
 }

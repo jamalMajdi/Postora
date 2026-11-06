@@ -49,6 +49,27 @@ export default {
     noPublications: 'You have not published anything yet.',
     quickStart: 'Start writing a post, or connect a channel first.'
   },
+  preview: {
+    title: 'Preview',
+    base: 'Telegram preview',
+    sideBySide: 'Side by side',
+    channelName: 'Your channel',
+    noLinkPreview: 'Telegram shows the URL as plain text — Postora disables the link preview card.',
+    maxPerMessage: 'Longest message',
+    perMessage: 'Telegram caps a single message at 4096 characters',
+    telegramScene: 'Telegram mode',
+    cleanScene: 'Clean view',
+    standaloneHint: 'You are outside Telegram — preview is approximate',
+    importFile: 'Import .md file',
+    imported: 'File imported: %name%',
+    importEmpty: 'The file is empty or unreadable.',
+    importTooBig: 'File is too large (limit %size% KB).',
+    importWrongType: 'Only plain Markdown files are allowed (.md, .markdown, .txt).',
+    replaceConfirm: 'The editor already has content. Replace it with the file content?',
+    charCount: '%n% chars',
+    splitNote: 'This post will be split into %n% messages, published in this order.'
+  },
+
   editor: {
     title: 'Article editor',
     placeholder: 'Write your article in Markdown…\n\n# Heading\n**bold** and *italic*\n- list item\n[link](https://example.com)',

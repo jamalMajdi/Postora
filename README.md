@@ -12,7 +12,7 @@
 [![Node](https://img.shields.io/badge/Node.js-20%20LTS-339933?logo=node.js&logoColor=white)](https://nodejs.org)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ESM-f7df1e?logo=javascript&logoColor=black)](#)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15%2B-4169e1?logo=postgresql&logoColor=white)](https://www.postgresql.org)
-[![Tests](https://img.shields.io/badge/tests-166%20passing-22a06b)](#-%D8%A7%D9%84%D8%A7%D8%AE%D8%AA%D8%A8%D8%A7%D8%B1%D8%A7%D8%AA)
+[![Tests](https://img.shields.io/badge/tests-204%20passing-22a06b)](#-%D8%A7%D9%84%D8%A7%D8%AE%D8%AA%D8%A8%D8%A7%D8%B1%D8%A7%D8%AA)
 
 </div>
 
@@ -365,7 +365,8 @@ npm test
 | `@postora/markdown-engine` | 2 | **50** ✅ |
 | `@postora/shared` | 1 | **12** ✅ |
 | `@postora/server` | 8 | **104** ✅ |
-| **الإجمالي** | **11** | **166** ✅ |
+| `@postora/miniapp` | 1 | **38** ✅ |
+| **الإجمالي** | **12** | **204** ✅ |
 
 اختبار الواجهة الحقيقي (يحتاج Chromium + الخادم يعمل):
 

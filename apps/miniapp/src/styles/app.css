@@ -658,3 +658,255 @@
     background-position: -200% 0;
   }
 }
+
+/* ==================== المعاينة المطوّرة (تلجرام) ==================== */
+
+/* شريط العنوان + زر الاستيراد */
+.editor-titlebar {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.editor-titlebar .input {
+  flex: 1;
+  min-width: 0;
+}
+
+/* أرصفة التحرير/المعاينة */
+.editor-panes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.editor-panes--split {
+  flex-direction: row;
+  align-items: stretch;
+}
+
+.editor-panes--split .editor-panes__write,
+.editor-panes--split .editor-panes__preview {
+  flex: 1 1 50%;
+  min-width: 0;
+  max-height: 62vh;
+  overflow-y: auto;
+}
+
+.editor-panes__write,
+.editor-panes__preview {
+  min-width: 0;
+}
+
+/* ملاحظة التقسيم إلى عدة رسائل */
+.preview-split-note {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--color-accent);
+  background: var(--color-accent-soft);
+  border-radius: var(--radius-sm);
+  padding: 6px 10px;
+  margin-bottom: var(--space-2);
+}
+
+/* مشهد المعاينة: وضع تلجرام بخلفية دردشة حقيقية */
+.preview-scene {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.preview-scene--telegram {
+  padding: var(--space-2);
+  background-color: #0e1621;
+  background-image:
+    radial-gradient(circle at 20% 15%, rgba(255, 255, 255, 0.045) 0 2px, transparent 3px),
+    radial-gradient(circle at 72% 48%, rgba(255, 255, 255, 0.04) 0 2px, transparent 3px),
+    radial-gradient(circle at 42% 82%, rgba(255, 255, 255, 0.035) 0 2px, transparent 3px);
+  background-size: 96px 96px;
+}
+
+/* مفاتيح تبديل المشهد */
+.preview-scene-switch {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.chip {
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  border-radius: 999px;
+  padding: 5px 12px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.chip--active {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: #fff;
+}
+
+/* -------- الفقاعة: أقرب ما يمكن لفقاعة قناة تلجرام -------- */
+.tg-preview {
+  gap: 10px;
+  padding: var(--space-3);
+}
+
+.tg-message {
+  max-width: 88%;
+  padding: 7px 11px 5px;
+  font-size: 14.5px;
+  line-height: 1.45;
+}
+
+.tg-message__meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 2px;
+}
+
+.tg-message__channel {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--color-accent);
+}
+
+.tg-message__index {
+  margin: 0;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--color-text-tertiary);
+  background: var(--color-bg-secondary);
+  border-radius: 999px;
+  padding: 0 6px;
+}
+
+.tg-message__body {
+  white-space: pre-wrap;
+  word-break: break-word;
+  unicode-bidi: plaintext;
+}
+
+.tg-message__body b {
+  font-weight: 700;
+}
+
+.tg-message__body pre {
+  margin: 4px 0;
+  white-space: pre-wrap;
+}
+
+.tg-message__body a {
+  color: var(--color-accent);
+  text-decoration: none;
+  word-break: break-all;
+}
+
+.tg-message__body a:hover {
+  text-decoration: underline;
+}
+
+/* الاقتباس في تلجرام: خط رأسي على اليسار دائمًا */
+.tg-quote {
+  display: inline;
+  border-inline-start: 3px solid var(--color-accent);
+  padding-inline-start: 8px;
+  margin-inline-start: 0;
+  color: var(--color-text-secondary);
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+/* سطر واحد يقفل حدود الاقتباس بصريًا */
+.tg-message__body .tg-quote {
+  border-inline-start: 3px solid var(--color-accent);
+}
+
+.tg-spoiler {
+  background: var(--color-text-tertiary);
+  color: transparent;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.tg-spoiler:hover {
+  background: transparent;
+  color: inherit;
+}
+
+.tg-mention {
+  color: var(--color-accent);
+  font-weight: 600;
+}
+
+.tg-message__footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  margin-top: 2px;
+  font-size: 11px;
+  color: var(--color-text-tertiary);
+}
+
+.tg-message__linkhint {
+  margin-top: 4px;
+  font-size: 11px;
+  color: var(--color-text-tertiary);
+  border-top: 1px dashed var(--color-border);
+  padding-top: 4px;
+}
+
+/* على الشاشات الضيقة: فقاعة أعرض قليلًا وخط أوضح */
+@media (max-width: 640px) {
+  .tg-message {
+    max-width: 94%;
+    font-size: 15px;
+  }
+
+  .editor-titlebar {
+    flex-wrap: wrap;
+  }
+
+  .editor-titlebar .input {
+    flex: 1 1 100%;
+  }
+}
+
+.tg-message__linkhint {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.tg-icon {
+  flex: 0 0 auto;
+  vertical-align: -1px;
+  opacity: 0.75;
+}
+
+/* تلجرام يعرض كتل الكود LTR دائمًا حتى في القنوات العربية.
+   الكود السطري يبقى داخل السياق لكن معزولًا (isolate) لئلا يقلب علامات الترقيم. */
+.tg-message__body pre {
+  direction: ltr;
+  text-align: left;
+  unicode-bidi: isolate;
+}
+
+.tg-message__body code {
+  unicode-bidi: isolate;
+  direction: ltr;
+}
+
+/* الرابط الطويل لا يكسر الفقاعة */
+.tg-message__body a {
+  unicode-bidi: isolate;
+}

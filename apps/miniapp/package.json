@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "build": "vite build",
-    "preview": "vite preview --host 0.0.0.0"
+    "preview": "vite preview --host 0.0.0.0",
+    "test": "vitest run --root ../.."
   },
   "dependencies": {
     "@postora/markdown-engine": "1.0.0",
@@ -17,6 +18,7 @@
   "devDependencies": {
     "@vitejs/plugin-react": "6.1.2",
     "puppeteer-core": "^23.11.1",
-    "vite": "8.3.5"
+    "vite": "8.3.5",
+    "vitest": "3.2.4"
   }
 }

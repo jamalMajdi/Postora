@@ -19,13 +19,14 @@
     "migrate": "node scripts/migrate.js up",
     "migrate:down": "node scripts/migrate.js down",
     "migrate:create": "node-pg-migrate create --migrations-dir apps/server/src/db/migrations --migration-file-language js",
-    "test": "npm run test --workspace @postora/markdown-engine && npm run test --workspace @postora/shared && npm run test --workspace @postora/server",
+    "test": "npm run test --workspace @postora/markdown-engine && npm run test --workspace @postora/shared && npm run test --workspace @postora/server && npm run test:miniapp",
     "test:engine": "npm run test --workspace @postora/markdown-engine",
     "test:server": "npm run test --workspace @postora/server",
     "lint": "eslint .",
     "format": "prettier --write \"**/*.{js,jsx,json,md,css}\"",
     "db:setup": "bash scripts/ensure-db.sh",
-    "verify": "bash scripts/verify.sh"
+    "verify": "bash scripts/verify.sh",
+    "test:miniapp": "vitest run apps/miniapp/tests"
   },
   "devDependencies": {
     "eslint": "9.18.0",

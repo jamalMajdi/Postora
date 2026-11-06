@@ -217,7 +217,8 @@ async function main() {
   const hasStrike = /<s>/.test(previewHtml);
   const hasCode = /<code>/.test(previewHtml);
   const hasLink = /<a /.test(previewHtml);
-  const hasBlockquote = /<blockquote>/.test(previewHtml);
+  // الاقتباس أصبح كيانًا كتليًا بخط رأسي (أقرب لعميل تلجرام) بدل <blockquote>
+  const hasBlockquote = /tg-quote/.test(previewHtml);
   const hasPre = /<pre>/.test(previewHtml);
 
   log(

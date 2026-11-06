@@ -49,6 +49,27 @@ export default {
     noPublications: 'لم تنشر أي مقال بعد.',
     quickStart: 'ابدأ بكتابة مقال، أو اربط قناة أولًا.'
   },
+  preview: {
+    title: 'المعاينة',
+    base: 'معاينة تلجرام',
+    sideBySide: 'جنبًا إلى جنب',
+    channelName: 'قناتك',
+    noLinkPreview: 'تلجرام يعرض الرابط نصًّا فقط — Postora يوقف بطاقة المعاينة عند النشر.',
+    maxPerMessage: 'أطول رسالة',
+    perMessage: 'الحد الأقصى لطول الرسالة في تلجرام هو 4096 محرفًا',
+    telegramScene: 'وضع تلجرام',
+    cleanScene: 'عرض نظيف',
+    standaloneHint: 'أنت تتصفح خارج تلجرام — المعاينة تقريبية',
+    importFile: 'استيراد ملف .md',
+    imported: 'تم استيراد الملف: %name%',
+    importEmpty: 'الملف فارغ أو غير قابل للقراءة.',
+    importTooBig: 'الملف كبير جدًا (الحد %size% كيلوبايت).',
+    importWrongType: 'يُسمح بملفات Markdown النصية فقط (.md أو .markdown أو .txt).',
+    replaceConfirm: 'المحرر يحتوي على نص. هل تريد استبداله بمحتوى الملف؟',
+    charCount: '%n% محرف',
+    splitNote: 'سيُقسَّم المنشور إلى %n% رسائل تُنشر بهذا الترتيب.'
+  },
+
   editor: {
     title: 'محرر المقال',
     placeholder: 'اكتب مقالك هنا باستخدام Markdown…\n\n# عنوان\n**نص عريض** و *مائل*\n- عنصر قائمة\n[رابط](https://example.com)',

@@ -1,7 +1,17 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useApp } from '../context/AppContext.jsx';
 import { MarkdownEditor } from '../components/editor/MarkdownEditor.jsx';
-import { TelegramPreview, PreviewStats } from '../components/preview/TelegramPreview.jsx';
+import {
+  TelegramPreview,
+  PreviewStats,
+  ViewModeSwitch
+} from '../components/preview/TelegramPreview.jsx';
+import {
+  isMarkdownFile,
+  isTooLarge,
+  readMarkdownFile,
+  MAX_IMPORT_BYTES
+} from '../lib/fileImport.js';
 import { apiClient } from '../lib/apiClient.js';
 import { haptic, showConfirm } from '../lib/telegramSdk.js';
 import { renderPreview, fingerprintPreview } from '../lib/markdown.js';
@@ -22,7 +32,7 @@ export function EditorPage({ initialDraft = null, onDraftSaved }) {
   const [channelId, setChannelId] = useState(
     initialDraft?.target_channel_id || channels[0]?.id || ''
   );
-  const [tab, setTab] = useState('write');
+  const [viewMode, setViewMode] = useState('write'); // 'write' | 'preview' | 'split'
   const [busy, setBusy] = useState(null); // 'draft' | 'publish' | null
   const [draftId, setDraftId] = useState(initialDraft?.id || null);
   const [draftVersion, setDraftVersion] = useState(initialDraft?.version || null);
@@ -32,8 +42,70 @@ export function EditorPage({ initialDraft = null, onDraftSaved }) {
     if (!channelId && channels.length > 0) setChannelId(channels[0].id);
   }, [channels, channelId]);
 
+  // تُحسب المعاينة من نفس محرك الخادم وتتحدث فورًا مع كل تعديل (useMemo على content)
   const clientPreview = useMemo(() => renderPreview(content), [content]);
   const isEmpty = content.trim().length === 0;
+  const messagesCount = clientPreview.stats?.messagesCount ?? 0;
+
+  /* ------------------------------ استيراد ملف .md ------------------------------ */
+  const fileInputRef = useRef(null);
+  const [isNarrow, setIsNarrow] = useState(
+    typeof window !== 'undefined' ? window.innerWidth < 640 : false
+  );
+
+  useEffect(() => {
+    const onResize = () => setIsNarrow(window.innerWidth < 640);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+
+  // على الشاشات الضيقة لا يوجد وضع "جنبًا إلى جنب" — نعود إلى الكتابة
+  useEffect(() => {
+    if (isNarrow && viewMode === 'split') setViewMode('preview');
+  }, [isNarrow, viewMode]);
+
+  async function handleImportFile(event) {
+    const file = event.target.files?.[0];
+    event.target.value = ''; // للسماح بإعادة اختيار الملف نفسه
+    if (!file) return;
+
+    if (!isMarkdownFile(file)) {
+      pushToast(t('preview.importWrongType'), 'error');
+      haptic('error');
+      return;
+    }
+    if (isTooLarge(file)) {
+      pushToast(
+        t('preview.importTooBig', { size: Math.round(MAX_IMPORT_BYTES / 1024) }),
+        'error'
+      );
+      haptic('error');
+      return;
+    }
+
+    try {
+      const text = await readMarkdownFile(file);
+      if (!text.trim()) {
+        pushToast(t('preview.importEmpty'), 'error');
+        return;
+      }
+
+      // لا نمحو عمل المستخدم بلا تأكيد
+      if (content.trim().length > 0) {
+        const confirmed = await showConfirm(t('preview.replaceConfirm'));
+        if (!confirmed) return;
+      }
+
+      setContent(text);
+      if (!title) setTitle(file.name.replace(/\.(md|markdown|txt|mdown|mkd)$/i, ''));
+      pushToast(t('preview.imported', { name: file.name }), 'success');
+      haptic('light');
+      setViewMode('preview');
+    } catch {
+      pushToast(t('preview.importEmpty'), 'error');
+      haptic('error');
+    }
+  }
 
   /* ------------------------------ حفظ المسودة ------------------------------ */
   async function handleSaveDraft() {
@@ -147,40 +219,62 @@ export function EditorPage({ initialDraft = null, onDraftSaved }) {
 
   return (
     <div className="editor-layout">
-      <div className="editor-tabs" role="tablist">
-        <button
-          type="button"
-          role="tab"
-          aria-selected={tab === 'write'}
-          className={`editor-tabs__tab${tab === 'write' ? ' editor-tabs__tab--active' : ''}`}
-          onClick={() => setTab('write')}
-        >
-          ✍️ {t('editor.write')}
-        </button>
-        <button
-          type="button"
-          role="tab"
-          aria-selected={tab === 'preview'}
-          className={`editor-tabs__tab${tab === 'preview' ? ' editor-tabs__tab--active' : ''}`}
-          onClick={() => setTab('preview')}
-        >
-          👁️ {t('editor.telegramPreview')}
-        </button>
-      </div>
-
-      <input
-        className="input"
-        value={title}
-        onChange={(event) => setTitle(event.target.value)}
-        placeholder={t('editor.titlePlaceholder')}
-        maxLength={200}
+      <ViewModeSwitch
+        mode={isNarrow && viewMode === 'split' ? 'preview' : viewMode}
+        onChange={setViewMode}
+        compact={isNarrow}
       />
 
-      {tab === 'write' ? (
-        <MarkdownEditor value={content} onChange={setContent} disabled={busy !== null} />
-      ) : (
-        <TelegramPreview markdown={content} />
-      )}
+      <div className="editor-titlebar">
+        <input
+          className="input"
+          value={title}
+          onChange={(event) => setTitle(event.target.value)}
+          placeholder={t('editor.titlePlaceholder')}
+          maxLength={200}
+        />
+        <button
+          type="button"
+          className="btn btn--secondary btn--sm"
+          onClick={() => fileInputRef.current?.click()}
+          disabled={busy !== null}
+          title={t('preview.importFile')}
+        >
+          📄 {t('preview.importFile')}
+        </button>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".md,.markdown,.txt,.mdown,.mkd,text/markdown,text/plain"
+          onChange={handleImportFile}
+          hidden
+          data-testid="md-import-input"
+        />
+      </div>
+
+      <div
+        className={`editor-panes${
+          viewMode === 'split' && !isNarrow ? ' editor-panes--split' : ''
+        }`}
+        data-view-mode={viewMode}
+      >
+        {viewMode === 'write' || (viewMode === 'split' && !isNarrow) ? (
+          <div className="editor-panes__write">
+            <MarkdownEditor value={content} onChange={setContent} disabled={busy !== null} />
+          </div>
+        ) : null}
+
+        {viewMode === 'preview' || (viewMode === 'split' && !isNarrow) ? (
+          <div className="editor-panes__preview" data-testid="preview-pane">
+            {messagesCount > 1 ? (
+              <div className="preview-split-note">
+                ✂️ {t('preview.splitNote', { n: messagesCount })}
+              </div>
+            ) : null}
+            <TelegramPreview markdown={content} />
+          </div>
+        ) : null}
+      </div>
 
       <PreviewStats markdown={content} />
 
